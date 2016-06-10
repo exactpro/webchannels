@@ -1,25 +1,26 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.exactprosystems</groupId>
 	<artifactId>webchannels</artifactId>
+	<packaging>jar</packaging>
 	<version>1.0</version>
 	<name>WebChannels</name>
-	
+
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<resources>
-	    	<resource>
+			<resource>
 				<directory>src/main/resources</directory>
-	    	</resource>
-	    </resources>
-	    <testResources>
-	    	<testResource>
-	        	<directory>src/test/resources</directory>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
 			</testResource>
-	    </testResources>
+		</testResources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -27,6 +28,22 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.Maven.plugins</groupId>
+				<artifactId>Maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<archive>
+						<index>true</index>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+						<manifestEntries>
+							<Implementation-Version>${build.number}</Implementation-Version>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -45,15 +62,15 @@
 					<coffeeDir>cs</coffeeDir>
 					<coffeeOutputDirectory>js</coffeeOutputDirectory>
 					<coffeeJoinSets>
-						 <joinSet>
-			                <id>channels</id>
-			                <fileSet>
-			                    <directory>${basedir}/cs</directory>
-			                    <includes>
-			                        <include>**/*.coffee</include>
-			                    </includes>
-			                </fileSet>
-			            </joinSet>
+						<joinSet>
+							<id>channels</id>
+							<fileSet>
+								<directory>${basedir}/cs</directory>
+								<includes>
+									<include>**/*.coffee</include>
+								</includes>
+							</fileSet>
+						</joinSet>
 					</coffeeJoinSets>
 				</configuration>
 			</plugin>
@@ -123,10 +140,10 @@
 			<version>2.3.2</version>
 		</dependency>
 		<dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.websocket</groupId>
@@ -141,14 +158,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-	        <groupId>org.reflections</groupId>
-	        <artifactId>reflections</artifactId>
-	        <version>0.9.9-RC1</version>
-	     </dependency>
-	     <dependency>
-		    <groupId>commons-collections</groupId>
-		    <artifactId>commons-collections</artifactId>
-		    <version>3.2.1</version>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.9-RC1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
 		</dependency>
 	</dependencies>
 </project>
