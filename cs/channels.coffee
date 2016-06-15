@@ -128,7 +128,7 @@ class @Channel
                 if @compressionEnabled and compressionSupported
                     http.responseType = 'arraybuffer'
                     msg = pako.deflate msg
-                http.timeout = 2000;
+                http.timeout = 30000;
                 http.onreadystatechange = () =>
                     if http.readyState == 4 and http.status == 200
                         if @compressionEnabled and compressionSupported
@@ -383,7 +383,7 @@ class @Channel
                 if @compressionEnabled and compressionSupported
                     http.responseType = 'arraybuffer'
                     msg = pako.deflate msg
-                http.timeout = 2000;
+                http.timeout = 30000;
                 http.onreadystatechange = () =>
                     if http.readyState == 4
                         if http.status != 200
