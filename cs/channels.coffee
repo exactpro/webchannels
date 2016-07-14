@@ -25,7 +25,7 @@ class @Channel
             if _settings.disconnectTimeout?
                 @disconnectTimeout = _settings.disconnectTimeout
             else
-                @disconnectTimeout = 10000
+                @disconnectTimeout = 30000
             if _settings.compressionEnabled?
                 @compressionEnabled = _settings.compressionEnabled
             else

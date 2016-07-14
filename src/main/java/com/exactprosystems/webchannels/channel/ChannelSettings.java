@@ -12,11 +12,11 @@ public class ChannelSettings {
 	private final boolean compressionEnabled;
 	
 	public ChannelSettings() {
-		this.pollingInterval = 1000;
+		this.pollingInterval = 100;
 		this.heartBeatInterval = 5000;
 		this.maxCountToSend = 250;
 		this.executorBatchSize = 10;
-		this.disconnectTimeout = 10000;
+		this.disconnectTimeout = 30000;
 		this.resendBufferSize = 1024;
 		this.compressionEnabled = false;
 		this.threadCount = Runtime.getRuntime().availableProcessors();
