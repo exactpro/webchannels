@@ -1,35 +1,38 @@
 class @Channel
 
     constructor: (_url, _useWebSockets, _socketsUrl, _logger, _settings) ->
-        @url = _url
-        @useWebSockets = _useWebSockets
-        @socketsUrl = _socketsUrl
-        if _logger? and _logger.debug? and _logger.error? and _logger.info?
-            @logger = _logger
-        else
-            if console? and console.debug? and console.error? and console.info?
-                @logger = console
-            else
-                @logger = {}
-                @logger.debug = () ->
-                    return
-                @logger.info = () ->
-                    return
-                @logger.error = () ->
-                    return
-        if _settings?
-            if _settings.heartBeatInterval?
-                @heartBeatInterval = _settings.heartBeatInterval
-            else
-                @heartBeatInterval = 5000
-            if _settings.disconnectTimeout?
-                @disconnectTimeout = _settings.disconnectTimeout
-            else
-                @disconnectTimeout = 30000
+        @url = _url 
+        @useWebSockets = _useWebSockets 
+        @socketsUrl = _socketsUrl 
+        if _logger? 
+            @logger = _logger 
+        else 
+            if console? 
+                @logger = console 
+            else 
+                @logger = {} 
+        if @logger.debug? == false 
+            @logger.debug = () -> 
+                return 
+        if @logger.info? == false 
+            @logger.info = () -> 
+                return 
+        if @logger.error? == false 
+            @logger.error = () -> 
+                return 
+        if @logger.log? == false 
+            @logger.log = () -> 
+                return 
+        @heartBeatInterval = 5000 
+        @disconnectTimeout = 30000 
+        @compressionEnabled = false 
+        if _settings? 
+            if _settings.heartBeatInterval? 
+                @heartBeatInterval = _settings.heartBeatInterval 
+            if _settings.disconnectTimeout? 
+                @disconnectTimeout = _settings.disconnectTimeout 
             if _settings.compressionEnabled?
                 @compressionEnabled = _settings.compressionEnabled
-            else
-                @compressionEnabled = false
         @outputMessages = []
         @inputMessages = []
         @sentMessages = []
