@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import com.exactprosystems.webchannels.exceptions.IncorrectListenerTypeException;
-
 public abstract class DefaultUpdateRetriever<T extends IUpdateRequestListener> implements IUpdateRetriever {
 
 	private final Set<T> listeners;
@@ -21,13 +19,13 @@ public abstract class DefaultUpdateRetriever<T extends IUpdateRequestListener> i
 	}
 	
 	@Override
-	public void registerUpdateRequest(IUpdateRequestListener listener) throws IncorrectListenerTypeException {
+	public void registerUpdateRequest(IUpdateRequestListener listener) {
 		lock.writeLock().lock();
 		try {
 			if (listener.getClass() == clazz) {
 				listeners.add((T) listener);
 			} else {
-				throw new IncorrectListenerTypeException("Listener type is " + listener.getClass());
+				throw new RuntimeException("Listener type is " + listener.getClass());
 			}
 		} finally {
 			lock.writeLock().unlock();
@@ -35,13 +33,13 @@ public abstract class DefaultUpdateRetriever<T extends IUpdateRequestListener> i
 	}
 
 	@Override
-	public void unregisterUpdateRequest(IUpdateRequestListener listener) throws IncorrectListenerTypeException {
+	public void unregisterUpdateRequest(IUpdateRequestListener listener) {
 		lock.writeLock().lock();
 		try {
 			if (listener.getClass() == clazz) {
 				listeners.remove(listener);
 			} else {
-				throw new IncorrectListenerTypeException("Listener type is " + listener.getClass());
+				throw new RuntimeException("Listener type is " + listener.getClass());
 			}
 		} finally {
 			lock.writeLock().unlock();

@@ -1,8 +1,5 @@
 package com.exactprosystems.webchannels;
 
-import com.exactprosystems.webchannels.enums.ServerStatus;
-import com.exactprosystems.webchannels.exceptions.IncorrectListenerTypeException;
-
 /**
  * 
  * Basic interface to define updates retriever which
@@ -13,14 +10,11 @@ import com.exactprosystems.webchannels.exceptions.IncorrectListenerTypeException
  */
 public interface IUpdateRetriever {
 	
-	void registerUpdateRequest(IUpdateRequestListener listener) throws IncorrectListenerTypeException;
+	void registerUpdateRequest(IUpdateRequestListener listener);
 	
-	void unregisterUpdateRequest(IUpdateRequestListener listener) throws IncorrectListenerTypeException;
+	void unregisterUpdateRequest(IUpdateRequestListener listener);
 	
-	void synchronizeUpdateRequest(IUpdateRequestListener listener) throws IncorrectListenerTypeException;
-	
-	@Deprecated
-	ServerStatus getStatus();
+	void synchronizeUpdateRequest(IUpdateRequestListener listener);
 	
 	void destroy();
 	

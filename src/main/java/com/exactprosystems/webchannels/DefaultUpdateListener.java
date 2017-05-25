@@ -8,18 +8,10 @@ public abstract class DefaultUpdateListener implements IUpdateRequestListener {
 	
 	private final AbstractChannel channel;
 	
-	private final IUpdateFilter filter;
-	
-	public DefaultUpdateListener(String id, AbstractChannel channel, IUpdateFilter filter) {
+	public DefaultUpdateListener(String id, AbstractChannel channel) {
 		super();
 		this.id = id;
 		this.channel = channel;
-		this.filter = filter;
-	}
-
-	@Override
-	public IUpdateFilter getFilter() {
-		return filter;
 	}
 
 	@Override
