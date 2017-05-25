@@ -4,6 +4,8 @@ class @Channel
         @url = _url
         @useWebSockets = _useWebSockets
         @socketsUrl = _socketsUrl
+        if not @socketsUrl?
+            @socketsUrl = @url
         if _logger?
             @logger = _logger
         else
@@ -132,8 +134,7 @@ class @Channel
                     seqnum: -1,
                     message: message
                 }]
-                protocol = if 'https:' == document.location.protocol then 'https://' else 'http://'
-                http.open('POST', protocol + window.location.host + @url + '?channelId=' + @channelId + '&compressionSupported=' + compressionSupported, true)
+                http.open('POST', @url + '?channelId=' + @channelId + '&compressionSupported=' + compressionSupported, true)
                 if @compressionEnabled and compressionSupported
                     http.responseType = 'arraybuffer'
                     msg = pako.deflate msg
@@ -170,11 +171,9 @@ class @Channel
         if @pollingAborted == false and @socket == null
             uniqId = @id++
             @logger.info @.toString() + ' Send new socket request. Atempt = ' + @connectAtemps + '. Id = ' + uniqId
-            if @socketsUrl? then addPath = @socketsUrl else addPath = @url
-            protocol = if 'https:' == document.location.protocol then 'wss://' else 'ws://'
             if 'WebSocket' of window
                 try
-                    socket = new WebSocket(protocol + window.location.host + addPath + '?channelId=' + @channelId)
+                    socket = new WebSocket(@socketsUrl + '?channelId=' + @channelId)
                 catch e
                     @logger.error @.toString() + ' Can not open websocket: ' + e.message, e
             if socket?
@@ -436,8 +435,7 @@ class @Channel
                 tmp = @outputMessages
                 msg = JSON.stringify tmp
                 @outputMessages = []
-                protocol = if 'https:' == document.location.protocol then 'https://' else 'http://'
-                http.open('POST', protocol + window.location.host + @url + '?channelId=' + @channelId + '&compressionSupported=' + compressionSupported, true)
+                http.open('POST', @url + '?channelId=' + @channelId + '&compressionSupported=' + compressionSupported, true)
                 if @compressionEnabled and compressionSupported
                     http.responseType = 'arraybuffer'
                     msg = pako.deflate msg
