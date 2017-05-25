@@ -34,7 +34,7 @@ public class SentMessagesBuffer {
 		List<WithSeqnumWrapper> list = new ArrayList<WithSeqnumWrapper>();
 		for (Object object : messageQueue) {
 			WithSeqnumWrapper wrapper = (WithSeqnumWrapper) object;
-			if (wrapper.getSeqnum() > from && wrapper.getSeqnum() < to) {
+			if (wrapper.getSeqnum() >= from && wrapper.getSeqnum() < to) {
 				list.add(wrapper);
 			}
 		}

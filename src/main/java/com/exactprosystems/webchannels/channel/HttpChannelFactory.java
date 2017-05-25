@@ -2,6 +2,9 @@ package com.exactprosystems.webchannels.channel;
 
 import java.util.concurrent.ExecutorService;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
+
 public class HttpChannelFactory extends AbstractChannelFactory {
 
 	public HttpChannelFactory(AbstactMessageFactory messageFactory, AbstractHandlerFactory handlerFactory) {

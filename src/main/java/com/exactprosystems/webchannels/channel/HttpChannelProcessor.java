@@ -3,12 +3,14 @@ package com.exactprosystems.webchannels.channel;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
+import java.util.zip.DeflaterInputStream;
 import java.util.zip.InflaterInputStream;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.exactprosystems.webchannels.messages.PollingRequest;
@@ -40,6 +42,7 @@ public class HttpChannelProcessor extends AbstractChannelProcessor{
 			channel = channelFactory.createChannel(channelId, settings, executor);
 			AbstractChannel prev = channels.putIfAbsent(channelId, channel);
 			if (prev != null) {
+				channel.close();
 				channel = prev;
 			} else {
 				channel.initHandler();

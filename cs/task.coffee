@@ -2,11 +2,8 @@ class @Task
 
     constructor: (_task, _repeat = false) ->
         @task = () =>
-            if @repeat == true
-                clearInterval @taskId
-            else
-                clearTimeout @taskId
-            @taskId = null
+            if not _repeat
+                @taskId = null
             _task()
             return
         @repeat = _repeat
@@ -17,7 +14,7 @@ class @Task
             if @repeat == true
                 @taskId = setInterval @task, _timeout
             else
-                @taskId = setTimeout @task, _timeout    
+                @taskId = setTimeout @task, _timeout
         return
 
     delay: (_timeout) ->
@@ -36,4 +33,3 @@ class @Task
                 clearTimeout @taskId
             @taskId = null
         return
-

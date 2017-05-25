@@ -6,6 +6,7 @@ package com.exactprosystems.webchannels;
  * @author dmitry.zavodchikov
  *
  */
+@Deprecated
 public interface AbstractUpdateEvent {
 
 }

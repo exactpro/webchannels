@@ -29,12 +29,14 @@ public class InputMessagesBuffer {
 			throw new RuntimeException("Buffer not in recover state");
 		} else {
 			int position = (int) (wrapper.getSeqnum() - from);
-			if (position >= messages.length) {
-				WithSeqnumWrapper[] tmp = new WithSeqnumWrapper[position + 1];
-				System.arraycopy(messages, 0, tmp, 0, messages.length);
-				messages = tmp;
+			if (position >= 0) {
+				if (position >= messages.length) {
+					WithSeqnumWrapper[] tmp = new WithSeqnumWrapper[position + 1];
+					System.arraycopy(messages, 0, tmp, 0, messages.length);
+					messages = tmp;
+				}
+				messages[position] = wrapper;
 			}
-			messages[position] = wrapper;
 		}
 	}
 
@@ -46,7 +48,7 @@ public class InputMessagesBuffer {
 			recovered = false;
 			from = expectedSeqnum;
 			to = seqnum;
-			messages = new WithSeqnumWrapper[(int) (seqnum - expectedSeqnum) + 1];
+			messages = new WithSeqnumWrapper[(int) (to - from)];
 		} else {
 			if (expectedSeqnum < from) {
 				from = expectedSeqnum;
@@ -54,7 +56,7 @@ public class InputMessagesBuffer {
 			if (seqnum > to) {
 				to = seqnum;
 			}
-			WithSeqnumWrapper[] tmp = new WithSeqnumWrapper[(int) (seqnum - expectedSeqnum) + 1];
+			WithSeqnumWrapper[] tmp = new WithSeqnumWrapper[(int) (to - from)];
 			System.arraycopy(messages, 0, tmp, 0, messages.length);
 			messages = tmp;
 		}
@@ -86,6 +88,14 @@ public class InputMessagesBuffer {
 		from = 0;
 		to = 0;
 		recovered = true;
+	}
+
+	public long getFrom() {
+		return from;
+	}
+
+	public long getTo() {
+		return to;
 	}
 
 }

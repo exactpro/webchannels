@@ -17,7 +17,7 @@ public interface IUpdateRequestListener {
 	 * @param event {@link AbstractUpdateEvent} event
 	 * @throws IncorrectEventTypeException exception
 	 */
-	void onEvent(AbstractUpdateEvent event) throws IncorrectEventTypeException;
+	void onEvent(Object event) throws IncorrectEventTypeException;
 	
 	/**
 	 * Subscriber status event handler
@@ -35,6 +35,7 @@ public interface IUpdateRequestListener {
 	 * Return event filter {@link IUpdateFilter}
 	 * @return {@link IUpdateFilter}
 	 */
+	@Deprecated
 	IUpdateFilter getFilter();
 	
 	/**

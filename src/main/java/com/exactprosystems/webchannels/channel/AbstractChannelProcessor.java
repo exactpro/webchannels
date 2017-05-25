@@ -8,7 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -35,6 +37,8 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 	protected final ExecutorService executor;
 	
 	protected final IdleChannelsMonitor idleChannelsMonitor;
+
+	private final Thread idleChannelsMonitorThread;
 	
 	public AbstractChannelProcessor (AbstractHandlerFactory handlerFactory, AbstactMessageFactory messageFactory,
 			ChannelSettings settings, AbstractChannelFactory channelFactory) {
@@ -56,8 +60,8 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 				ForkJoinPool.defaultForkJoinWorkerThreadFactory, handler, false);
 		
 		this.idleChannelsMonitor = new IdleChannelsMonitor();
-		Thread thread = new Thread(idleChannelsMonitor, this.getClass().getSimpleName() + "-IdleChannelsMonitor");
-		thread.start();
+		this.idleChannelsMonitorThread = new Thread(idleChannelsMonitor, this.getClass().getSimpleName() + "-IdleChannelsMonitor");
+		this.idleChannelsMonitorThread.start();
 		
 		logger.info("Create processor {}", this);
 		
@@ -98,12 +102,23 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 		
 		for (AbstractChannel channel : channels.values()) {
 			channel.close();
-			SessionContrtoller.getInstance().unregisterChannel(channel);
 		}
 		
-		idleChannelsMonitor.stop();
 		channels.clear();
-		executor.shutdownNow();
+		
+		idleChannelsMonitor.stop();
+		try {
+			idleChannelsMonitorThread.join();
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
+		}
+		
+		executor.shutdown();
+		try {
+			executor.awaitTermination(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
+		}
 		
 		logger.info("Destroy processor {}", this);
 		

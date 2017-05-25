@@ -1,48 +1,54 @@
 class @Channel
 
     constructor: (_url, _useWebSockets, _socketsUrl, _logger, _settings) ->
-        @url = _url 
-        @useWebSockets = _useWebSockets 
-        @socketsUrl = _socketsUrl 
-        if _logger? 
-            @logger = _logger 
-        else 
-            if console? 
-                @logger = console 
-            else 
-                @logger = {} 
-        if @logger.debug? == false 
-            @logger.debug = () -> 
-                return 
-        if @logger.info? == false 
-            @logger.info = () -> 
-                return 
-        if @logger.error? == false 
-            @logger.error = () -> 
-                return 
-        if @logger.log? == false 
-            @logger.log = () -> 
-                return 
-        @heartBeatInterval = 5000 
-        @disconnectTimeout = 30000 
-        @compressionEnabled = false 
-        if _settings? 
-            if _settings.heartBeatInterval? 
-                @heartBeatInterval = _settings.heartBeatInterval 
-            if _settings.disconnectTimeout? 
-                @disconnectTimeout = _settings.disconnectTimeout 
+        @url = _url
+        @useWebSockets = _useWebSockets
+        @socketsUrl = _socketsUrl
+        if _logger?
+            @logger = _logger
+        else
+            if console?
+                @logger = console
+            else
+                @logger = {}
+        if not @logger.debug?
+            @logger.debug = () ->
+                return
+        if not @logger.info?
+            @logger.info = () ->
+                return
+        if not @logger.error?
+            @logger.error = () ->
+                return
+        if not @logger.log?
+            @logger.log = () ->
+                return
+        @channelId = Util.get().generateId()
+        @maxDispatchTime = 1000
+        @heartBeatInterval = 5000
+        @disconnectTimeout = 30000
+        @compressionEnabled = false
+        if _settings?
+            if _settings.heartBeatInterval?
+                @heartBeatInterval = _settings.heartBeatInterval
+            if _settings.disconnectTimeout?
+                @disconnectTimeout = _settings.disconnectTimeout
             if _settings.compressionEnabled?
                 @compressionEnabled = _settings.compressionEnabled
+            if _settings.idPrefix?
+                @channelId = _settings.idPrefix + '-' + @channelId
+        if @heartBeatInterval < @maxDispatchTime
+            @maxDispatchTime = @heartBeatInterval
         @outputMessages = []
         @inputMessages = []
         @sentMessages = []
+        @receivedMessages = []
         @socket = null
         @pollingRequest = null
         @httpSendRequest = null
         @eventHandlers = {}
         @connectAtemps = 0
         @pollingAborted = false # Global stop flag
-        @channelId = Util.get().generateId()
         @successHandlers = []
         @errorHandlers = []
         @id = 1 # XMLHttpRequest / Websocket counter
@@ -51,7 +57,7 @@ class @Channel
         @ioInterval = 100
         @curStatus = null
         @lastSendTime = Date.now()
-        @lastUpdateTime = @lastSendTime 
+        @lastUpdateTime = @lastSendTime
         @sendHeartBeatTask = new Task @sendHeartBeat
         @checkConnectionTask = new Task @checkConnection
         @reconnectTask = new Task @reconnect
@@ -59,6 +65,8 @@ class @Channel
         @sendNewSocketRequestTask = new Task @sendNewSocketRequest
         @httpSendTask = new Task @httpSend
         @websocketSendTask = new Task @websocketSend
+        @dispacthTask = new Task @dispacthEvent
+        @resendRequestTask = new Task @resendRequest
         @recovered = true
         @from = 0
         @to = 0
@@ -68,21 +76,19 @@ class @Channel
         delta = Date.now() - @lastSendTime
         @logger.debug @.toString() + ' Send HeartBeat after ' + delta + ' ms inactivity'
         return
-    
+
     checkConnection: () =>
-        @disconnect(true)
-        @connect(true)
         @sendRequest MessageFactory.get().create('TestRequest')
         delta = Date.now() - @lastUpdateTime
         @logger.info @.toString() + ' Send TestRequest after ' + delta + ' ms inactivity'
         return
-    
+
     reconnect: () =>
         @disconnect()
         delta = Date.now() - @lastUpdateTime
         @logger.info @.toString() + ' Disconnect after ' + delta + ' ms inactivity'
         return
-    
+
     onComplete: (uniqId, http) =>
         @logger.debug @.toString() + ' Polling request complete. Id = ' + uniqId
         if @pollingRequest == http
@@ -91,25 +97,25 @@ class @Channel
         if @ioInterval < 1000
             @ioInterval = @ioInterval + 100
         return
-    
+
     onError: (uniqId) =>
         @logger.error @.toString() + ' Polling request error. Id = ' + uniqId
         @connectAtemps++
         if @curStatus != 'error' # to prevent error spamming
             handler() for handler in @errorHandlers
-            @curStatus = 'error' 
+            @curStatus = 'error'
         return
-        
+
     onSuccess: (uniqId, data) =>
         @logger.debug @.toString() + ' Polling request success. Id = ' + uniqId
-        @connectAtemps = 0 
+        @connectAtemps = 0
         @ioInterval = 100
         if @curStatus != 'success' # to prevent success spamming
             handler() for handler in @successHandlers
             @curStatus = 'success'
-        @processMessage message for message in data    
+        @processMessage message for message in data
         return
-        
+
     sendNewPollingRequest: () =>
         if @pollingAborted == false && @pollingRequest == null
             try
@@ -118,10 +124,10 @@ class @Channel
                 @logger.debug @.toString() + ' Send new polling request. Atempt = ' + @connectAtemps + '. Id =' + uniqId
                 message = MessageFactory.get().create('PollingRequest')
                 http = new XMLHttpRequest()
-                #if http.responseType?
-                #    compressionSupported = true
-                #else
-                compressionSupported = false
+                if http.responseType?
+                    compressionSupported = true
+                else
+                    compressionSupported = false
                 msg = JSON.stringify [{
                     seqnum: -1,
                     message: message
@@ -131,7 +137,7 @@ class @Channel
                 if @compressionEnabled and compressionSupported
                     http.responseType = 'arraybuffer'
                     msg = pako.deflate msg
-                http.timeout = 30000;
+                http.timeout = @heartBeatInterval * 2;
                 http.onreadystatechange = () =>
                     if http.readyState == 4 and http.status == 200
                         if @compressionEnabled and compressionSupported
@@ -159,7 +165,7 @@ class @Channel
             catch e
                 @logger.error @.toString() + ' Can not open polling request: ' + e.message, e
         return
-        
+
     sendNewSocketRequest: () =>
         if @pollingAborted == false and @socket == null
             uniqId = @id++
@@ -188,9 +194,13 @@ class @Channel
                     @connectAtemps++
                     if @socket == socket
                         @socket = null
-                    @sendNewSocketRequestTask.schedule @ioInterval
-                    if @ioInterval < 1000
-                        @ioInterval = @ioInterval + 100
+                    if uniqId == 1 and @inputSeqnum == 0
+                        @sendNewPollingRequestTask.schedule @ioInterval
+                        @sendNewSocketRequestTask.cancel()
+                    else
+                        @sendNewSocketRequestTask.schedule @ioInterval
+                        if @ioInterval < 1000
+                            @ioInterval = @ioInterval + 100
                     return
                 socket.onmessage = (stream) =>
                     if stream.data?
@@ -204,58 +214,82 @@ class @Channel
                         catch e
                             @logger.error @.toString() + ' ' + e.message, e
                     return
-                socket.onerror = () =>
-                    @logger.error @.toString() + ' Socket error. Id = ' + uniqId
+                socket.onerror = (e) =>
+                    @logger.error @.toString() + ' Socket error: ' + e + '. Id = ' + uniqId
                     if @curStatus != 'error'
                         handler() for handler in @errorHandlers
                         @curStatus = 'error'
                     return
                 @socket = socket
         return
-        
-    dispacthEvent: (event, val) =>
-        if event of @eventHandlers
-            handler val for handler in @eventHandlers[event]
+
+    dispacthEvent: () =>
+        startTime = Date.now()
+        while  Date.now() - startTime < @maxDispatchTime and @receivedMessages.length > 0
+            message = @receivedMessages.shift()
+            event = 'on' + message['messageType']
+            @logger.debug @.toString() + ' Dispatch event: ' + event
+            try
+                if event of @eventHandlers
+                    handler message for handler in @eventHandlers[event]
+            catch e
+                @logger.error @.toString() + ' ' + e.message, e
+        if @receivedMessages.length > 0
+            @dispacthTask.schedule 10
         return
-     
+
     processMessage: (data) =>
         message = data.message
         seqnum = data.seqnum
         expectedSeqnum = @inputSeqnum + 1
+        @handleAdminMessage message
         if seqnum == expectedSeqnum
             if @isRecovered()
-                @handleMessage message
+                @handleBusinessMessage message
             else
+                @logger.info @.toString() + ' Stash message with seqnum ' + data.seqnum
                 @stash data
         else if seqnum > expectedSeqnum
-            @logger.info @.toString() + ' Missed messages between ' + @inputSeqnum + ' and ' + seqnum
+            @logger.info @.toString() + ' Missed messages from ' + expectedSeqnum + ' to ' + seqnum
+            if expectedSeqnum == 1
+                @disconnect()
+                throw new Error("Connection closed on client")
             resendRequest = MessageFactory.get().create('ResendRequest')
-            resendRequest.from = @inputSeqnum
+            resendRequest.from = expectedSeqnum
             resendRequest.to = seqnum
             @sendRequest resendRequest
+            @resendRequestTask.schedule @heartBeatInterval
+            @logger.info @.toString() + ' Recover init'
             @initRecover expectedSeqnum, seqnum
+            @logger.info @.toString() + ' Stash message with seqnum ' + data.seqnum
             @stash data
         else if seqnum < expectedSeqnum
             if @isRecovered()
                 @logger.info @.toString() + ' Unexpected message with seqnum ' + seqnum + ', expected seqnum ' + expectedSeqnum
             else
+                @logger.info @.toString() + ' Stash message with seqnum ' + data.seqnum
                 @stash data
                 @tryRecover()
+                if @isRecovered()
+                    @logger.info @.toString() + ' Recover complete'
         if seqnum > @inputSeqnum
             @inputSeqnum = seqnum
+        if @isRecovered()
+            @lastUpdateTime = Date.now()
+            @checkConnectionTask.delay @heartBeatInterval * 2
+            @reconnectTask.delay @disconnectTimeout
         return
 
     stash: (data) =>
-        @logger.info @.toString() + ' Stash message with seqnum ' + data.seqnum
         pos = data.seqnum - @from
-        @inputMessages[pos] = data
+        if pos >= 0
+            @inputMessages[pos] = data
         return
-                    
+
     isRecovered: () =>
         return @recovered;
 
     initRecover: (from, to) =>
-        @logger.info @.toString() + ' Recover init'
         if @recovered == true
             @recovered = false
             @from = from
@@ -270,43 +304,58 @@ class @Channel
 
     tryRecover: () =>
         while @inputMessages[0]?
-            @handleMessage @inputMessages[0].message
-            @from = @inputMessages[0].seqnum
-            @inputMessages.splice 0, 1
+            data = @inputMessages.shift()
+            @handleBusinessMessage data.message
+            @from = data.seqnum + 1
         if @inputMessages.length == 0 and @from >= @to
-            @logger.info @.toString() + ' Recover complete'
             @recovered = true
         return
 
-    handleMessage: (message) =>
-        @lastUpdateTime = Date.now()
-        @checkConnectionTask.delay @heartBeatInterval * 2
-        @reconnectTask.delay @disconnectTimeout
+    resendRequest: () =>
+        if not @isRecovered()
+            @logger.info @.toString() + ' Try to recover messages from ' + @from + ' to ' + @to + ' again'
+            resendRequest = MessageFactory.get().create('ResendRequest')
+            resendRequest.from = @from
+            resendRequest.to = @to
+            @sendRequest resendRequest
+            @resendRequestTask.schedule @heartBeatInterval
+        return
+
+    handleAdminMessage: (message) =>
         if message['messageType'] == 'HeartBeat'
             @logger.debug @.toString() + 'HeartBeat received'
         else if message['messageType'] == 'TestRequest'
-            @logger.debug @.toString() + ' Test request received'
+            @logger.info @.toString() + ' TestRequest received'
             @sendRequest MessageFactory.get().create('HeartBeat')
         else if message['messageType'] == 'ResendRequest'
-            @logger.info @.toString() + ' Resend messages from ' + message.from + ' to ' + message.to
-            toResend = @getSentMessages message.from, message.to
-            if toResend.length + 1 < message.to - message.from
-                @logger.error @.toString() + ' failed to resend messages from ' + message.from + ' to ' + message.to
+            @logger.info @.toString() + ' ResendRequest received from ' + message.from + ' to ' + message.to
+            if message.from == 1
                 @disconnect()
-            else    
+                throw new Error("Connection closed on server")
+            toResend = @getSentMessages message.from, message.to
+            if toResend.length < message.to - message.from
+                @disconnect()
+                throw new Error(@.toString() + ' failed to resend messages from ' + message.from + ' to ' + message.to)
+            else
                 for request in toResend
+                    @logger.info @.toString() + ' Resend message with seqnum ' + request.seqnum
                     @outputMessages.push request
                 if @socket?
                     @websocketSendTask.schedule @ioInterval
                 else
                     @httpSendTask.schedule @ioInterval
-        else
-            try
-                @dispacthEvent 'on' + message['messageType'], message
-            catch e
-                @logger.error @.toString() + ' ' + e.message, e
-            return
-        
+        else if message['messageType'] == 'CloseChannel'
+            @logger.info @.toString() + ' CloseChannel received'
+            @disconnect()
+            throw new Error("Connection closed on server")
+        return
+
+    handleBusinessMessage: (message) =>
+        if message['messageType'] != 'HeartBeat' and message['messageType'] != 'TestRequest' and message['messageType'] != 'ResendRequest'
+            @receivedMessages.push message
+            @dispacthTask.schedule 10
+        return
+
     connect: (soft = false) =>
         @logger.info @.toString() + ' connecting'
         @pollingAborted = false
@@ -320,7 +369,7 @@ class @Channel
             @checkConnectionTask.delay @heartBeatInterval * 2
             @sendHeartBeatTask.delay @heartBeatInterval
         return
-    
+
     disconnect: (soft = false) =>
         @logger.info @.toString() + ' disconnecting'
         @pollingAborted = true
@@ -347,19 +396,25 @@ class @Channel
             @reconnectTask.cancel()
             @checkConnectionTask.cancel()
             @sendHeartBeatTask.cancel()
+            @sendNewPollingRequestTask.cancel()
+            @sendNewSocketRequestTask.cancel()
+            @httpSendTask.cancel()
+            @websocketSendTask.cancel()
+            @dispacthTask.cancel()
+            @resendRequestTask.cancel()
         return
-    
+
     addHandler: (event, handler) =>
         if event == 'success'
             @successHandlers.push handler
         else if event == 'error'
             @errorHandlers.push handler
-        else 
+        else
             if event not of @eventHandlers
                 @eventHandlers[event] = []
             @eventHandlers[event].push handler
         return
-    
+
     removeHandler: (event, handler) =>
         if event == 'success'
             @successHandlers.splice i, 1 for func, i in @successHandlers when handler == func
@@ -369,15 +424,15 @@ class @Channel
             if event of @eventHandlers
                 @eventHandlers[event].splice i, 1 for func, i in @eventHandlers[event] when handler == func
         return
-        
+
     httpSend: () =>
         if @pollingAborted == false and @outputMessages.length > 0
             try
                 http = new XMLHttpRequest()
-                #if http.responseType?
-                #    compressionSupported = true
-                #else
-                compressionSupported = false
+                if http.responseType?
+                    compressionSupported = true
+                else
+                    compressionSupported = false
                 tmp = @outputMessages
                 msg = JSON.stringify tmp
                 @outputMessages = []
@@ -386,7 +441,7 @@ class @Channel
                 if @compressionEnabled and compressionSupported
                     http.responseType = 'arraybuffer'
                     msg = pako.deflate msg
-                http.timeout = 30000;
+                http.timeout = @heartBeatInterval;
                 http.onreadystatechange = () =>
                     if http.readyState == 4
                         if http.status != 200
@@ -403,7 +458,7 @@ class @Channel
             catch e
                 @logger.error @.toString() + ' Can not send message request ' + e.message, e
         return
-        
+
     websocketSend: () =>
         try
             if @pollingAborted == false and @outputMessages.length > 0
@@ -420,7 +475,7 @@ class @Channel
         catch e
             @logger.error @.toString() + ' Can not send message request ' + e.message, e
         return
-        
+
     sendRequest: (message) =>
         data =
             message: message,
@@ -432,17 +487,17 @@ class @Channel
         else if @pollingRequest
             @httpSendTask.schedule @ioInterval
         return
-    
+
     getSentMessages: (from, to) =>
         messages = []
-        messages.push data for data in @sentMessages when data.seqnum > from and data.seqnum < to
+        messages.push data for data in @sentMessages when data.seqnum >= from and data.seqnum < to
         return messages
-    
+
     rememberMessage: (data) =>
         if @sentMessages.length > 1000
             @sentMessages.shift()
         @sentMessages.push data
         return
-        
+
     toString: () =>
         return 'Channel[channelId=' + @channelId + ']'

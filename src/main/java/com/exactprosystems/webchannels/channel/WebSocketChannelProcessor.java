@@ -1,5 +1,6 @@
 package com.exactprosystems.webchannels.channel;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;

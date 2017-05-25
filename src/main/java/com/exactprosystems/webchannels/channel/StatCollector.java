@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
@@ -16,12 +20,14 @@ import org.slf4j.LoggerFactory;
 import com.exactprosystems.webchannels.enums.ChannelStatus;
 
 public class StatCollector {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private static final long THREAD_SLEEP_TIME = 100L;
 	
-	private static final long STAT_TIMEOUT = 60 * 1000L;
+	private static final long SECOND = 1000L;
+	
+	private static final long STAT_TIMEOUT = 60 * SECOND;
 	
 	private static volatile StatCollector collector;
 
@@ -38,6 +44,10 @@ public class StatCollector {
 	private final ReentrantLock lock;
 	
 	private boolean started;
+
+	private Thread processorThread;
+
+	private Thread cleanerThread;
 	
 	private StatCollector() {
 		this.statsQueue = new LinkedBlockingQueue<ChannelStats>();
@@ -75,11 +85,12 @@ public class StatCollector {
 		synchronized (this) {
 			if (started == false) {
 				statsProcessor = new StatCollectorProcessor();
-				Thread processorThread = new Thread(statsProcessor, "Channels-stats-processor");
+				processorThread = new Thread(statsProcessor, "Channels-stats-processor");
 				processorThread.start();
 				cleaner = new StatCleaner();
-				Thread cleanerThread = new Thread(cleaner, "Channels-stats-cleaner");
+				cleanerThread = new Thread(cleaner, "Channels-stats-cleaner");
 				cleanerThread.start();
+				started = true;
 			}
 		}
 	}
@@ -88,9 +99,22 @@ public class StatCollector {
 		synchronized (this) {
 			if (started == true) {
 				statsProcessor.stop();
+				try {
+					processorThread.join();
+				} catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
+				}
 				statsProcessor = null;
+				processorThread = null;
 				cleaner.stop();
+				try {
+					cleanerThread.join();
+				} catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
+				}
 				cleaner = null;
+				cleanerThread = null;
+				started = false;
 			}
 		}
 	}
@@ -120,7 +144,10 @@ public class StatCollector {
 					if (stats != null) {
 						lock.lock();
 						try {
-							statsMap.put(stats.getChannelId(), stats);
+							ChannelStats curStats = statsMap.get(stats.getChannelId());
+							if (curStats == null || curStats.getStatus() != ChannelStatus.CLOSED) {
+								statsMap.put(stats.getChannelId(), stats);
+							}
 							if (stats.getStatus() == ChannelStatus.CLOSED) {
 								long currentMillis = System.currentTimeMillis();
 								timeoutMap.put(stats.getChannelId(), currentMillis);

@@ -3,6 +3,8 @@ package com.exactprosystems.webchannels.channel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.zip.DeflaterOutputStream;
@@ -12,11 +14,12 @@ import javax.websocket.Session;
 import com.exactprosystems.webchannels.enums.ChannelStatus;
 import com.exactprosystems.webchannels.exceptions.RecoverException;
 import com.exactprosystems.webchannels.messages.AbstractMessage;
+import com.exactprosystems.webchannels.messages.AdminMessage;
+import com.exactprosystems.webchannels.messages.BusinessMessage;
 import com.exactprosystems.webchannels.messages.CloseChannel;
 import com.exactprosystems.webchannels.messages.HeartBeat;
 import com.exactprosystems.webchannels.messages.ResendRequest;
 import com.exactprosystems.webchannels.messages.TestRequest;
-import com.exactprosystems.webchannels.util.DateUtils;
 
 public class WebSocketChannel extends AbstractChannel {
 	
@@ -41,6 +44,10 @@ public class WebSocketChannel extends AbstractChannel {
 	private long inputSeqnum;
 	
 	private long outputSeqnum;
+	
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+
+	private long lastResendRequestTime;
 	
 	public WebSocketChannel(IChannelHandler handler, String channelId, ChannelSettings settings,
 			AbstactMessageFactory messageFactory, ExecutorService executor) {
@@ -129,20 +136,33 @@ public class WebSocketChannel extends AbstractChannel {
 		long seqnum = wrapper.getSeqnum();
 		long expectedSeqnum = inputSeqnum + 1;
 		
+		if (message instanceof AdminMessage) {
+			
+			handleAdminMessage((AdminMessage) message, expectedSeqnum);
+			
+		}
+		
 		if (seqnum == expectedSeqnum) {
 		
 			if (inputMessageQueue.isRecovered()) {
-				handleInputMessage(message, seqnum);
+				if (message instanceof BusinessMessage) {
+					handleBusinessMessage((BusinessMessage) message, seqnum);
+				}
 			} else {
+				logger.info("Stash message with seqnum {} on {}", seqnum, this);
 				inputMessageQueue.add(wrapper);
 			}
 			
 		} else	if (seqnum > expectedSeqnum) {
 				
-			logger.error("Missed messages between {} and {} on {}", inputSeqnum, seqnum, this);
-			this.sendMessage(new ResendRequest("Resend", inputSeqnum, seqnum));
+			logger.error("Missed messages from {} to {} on {}", expectedSeqnum, seqnum, this);
+			this.sendMessage(new ResendRequest("Resend", expectedSeqnum, seqnum));
+			this.lastResendRequestTime = System.currentTimeMillis();
 			
+			logger.info("Init recover on {}", this);
 			inputMessageQueue.recover(expectedSeqnum, seqnum);
+			
+			logger.info("Stash message with seqnum {} on {}", seqnum, this);
 			inputMessageQueue.add(wrapper);
 		
 		} else if (seqnum < expectedSeqnum) {
@@ -153,16 +173,18 @@ public class WebSocketChannel extends AbstractChannel {
 				
 			} else {
 				
-				logger.debug("Resend message with seqnum {} received on {}", seqnum, this);
+				logger.info("Stash message with seqnum {} on {}", seqnum, this);
 				inputMessageQueue.add(wrapper);
 				
 				List<WithSeqnumWrapper> messages = inputMessageQueue.tryRecover();
 				for (WithSeqnumWrapper restored : messages) {
-					handleInputMessage(restored.getMessage(), restored.getSeqnum());
+					if (restored.getMessage() instanceof BusinessMessage) {
+						handleBusinessMessage((BusinessMessage) restored.getMessage(), restored.getSeqnum());
+					}
 				}
 				
 				if (inputMessageQueue.isRecovered()) {
-					logger.info("Recovered {}", this);
+					logger.info("Recovere complete on {}", this);
 				}
 				
 			}
@@ -173,51 +195,54 @@ public class WebSocketChannel extends AbstractChannel {
 			inputSeqnum = seqnum;
 		}
 		
-	}
-
-	private void handleInputMessage(AbstractMessage message, long seqnum) {
-		
-		lastReceiveTime = System.currentTimeMillis();
-		
-		if (message.isAdmin() == false) {
-        	// Business messages process by handler
-			AbstractMessage response = this.getHandler().onReceive(message, seqnum);
-			if (response != null) {
-				this.sendMessage(response);
+		if (inputMessageQueue.isRecovered()) {
+			lastReceiveTime = System.currentTimeMillis();
+		} else {
+			if (System.currentTimeMillis() - this.lastResendRequestTime > this.getChannelSettings().getHeartBeatInterval()) {
+				logger.error("Try to recover messages from {} to {} again on {}", inputMessageQueue.getFrom(), inputMessageQueue.getTo(), this);
+				this.sendMessage(new ResendRequest("Resend", inputMessageQueue.getFrom(), inputMessageQueue.getTo()));
+				this.lastResendRequestTime = System.currentTimeMillis();
 			}
-        } else {
-        	
-        	// Handle admin message
-        	if (message instanceof TestRequest) {
-    			logger.warn("TestRequest received on {}", this);
-    			this.sendMessage(new HeartBeat());
-    		} else if (message instanceof HeartBeat) {
-    			logger.debug("HeartBeat received on {}", this);
-    			if (awaitHeartbeat) {
-    				awaitHeartbeat = false;
-    			}
-    		} else if (message instanceof ResendRequest) {
-    			logger.error("ResendRequest {} received on {}", message, this);
-    			ResendRequest resendRequest = (ResendRequest) message;
-                try {
-	                List<WithSeqnumWrapper> messages = sentMessageQueue.get(resendRequest.getFrom(), resendRequest.getTo());
-	                for (WithSeqnumWrapper old : messages) {
-	                	logger.debug("Resend message {} on {}", old, this);
-	                    outputMessageQueue.offer(new WithSeqnumWrapper(old.getSeqnum(), old.getMessage()));
-	                }
-                } catch (RecoverException e) {
-                	logger.error(e.getMessage(), e);
-                	onClose();
-                }
-            } else if (message instanceof CloseChannel) {
-            	logger.debug("CloseChannel received on {}", this);
-            	onClose();
-            } else {
-            	throw new RuntimeException("Unsupported message " + message);
-            }
-        	
-        }
+		}
 		
+	}
+	
+	private void handleBusinessMessage(BusinessMessage message, long seqnum) {
+		AbstractMessage response = this.getHandler().onReceive(message, seqnum);
+		if (response != null) {
+			this.sendMessage(response);
+		}
+	}
+	
+	private void handleAdminMessage(AdminMessage message, long seqnum) {
+		// Handle admin message
+    	if (message instanceof TestRequest) {
+			logger.warn("TestRequest received on {}", this);
+			this.sendMessage(new HeartBeat());
+		} else if (message instanceof HeartBeat) {
+			logger.debug("HeartBeat received on {}", this);
+			if (awaitHeartbeat) {
+				awaitHeartbeat = false;
+			}
+		} else if (message instanceof ResendRequest) {
+			logger.error("ResendRequest {} received on {}", message, this);
+			ResendRequest resendRequest = (ResendRequest) message;
+            try {
+                List<WithSeqnumWrapper> messages = sentMessageQueue.get(resendRequest.getFrom(), resendRequest.getTo());
+                for (WithSeqnumWrapper old : messages) {
+                	logger.info("Resend message {} on {}", old, this);
+                    outputMessageQueue.offer(old);
+                }
+            } catch (RecoverException e) {
+            	logger.error("Failed to handle ResendRequest", e);
+            	onClose();
+            }
+        } else if (message instanceof CloseChannel) {
+        	logger.debug("CloseChannel received on {}", this);
+        	onClose();
+        } else {
+        	throw new RuntimeException("Unsupported message " + message);
+        }
 	}
 	
 	@Override
@@ -337,7 +362,7 @@ public class WebSocketChannel extends AbstractChannel {
 			} else {
 				
 				if (logger.isTraceEnabled()) {
-					logger.trace("Last send: {} for {}", DateUtils.formatTime(lastSendTime), this);
+					logger.trace("Last send: {} for {}", dateFormat.format(new Date(lastSendTime)), this);
 				}
 				
 				if (currentTime - lastSendTime > this.getChannelSettings().getHeartBeatInterval()) {
@@ -353,7 +378,7 @@ public class WebSocketChannel extends AbstractChannel {
 		} else {
 				
 			if (logger.isTraceEnabled()) {
-				logger.trace("Last send: {} for {} ", DateUtils.formatTime(lastSendTime), this);
+				logger.trace("Last send: {} for {} ", dateFormat.format(new Date(lastSendTime)), this);
 			}
 			
 			if (currentTime - lastSendTime > this.getChannelSettings().getDisconnectTimeout()) {
