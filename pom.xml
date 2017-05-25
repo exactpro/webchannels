@@ -79,7 +79,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptor>src/assembly/bin.xml</descriptor>
-					<finalName>webchannels-js-${pom.version}</finalName>
+					<finalName>webchannels-js-${project.version}</finalName>
 				</configuration>
 				<executions>
 					<execution>
