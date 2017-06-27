@@ -42,7 +42,6 @@ public class HttpChannelProcessor extends AbstractChannelProcessor{
 			channel = channelFactory.createChannel(channelId, settings, executor);
 			AbstractChannel prev = channels.putIfAbsent(channelId, channel);
 			if (prev != null) {
-				channel.close();
 				channel = prev;
 			} else {
 				channel.initHandler();
