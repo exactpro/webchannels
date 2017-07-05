@@ -23,11 +23,7 @@ public class TestJsonMessageFactory {
 	@Test
 	public void testSingleEncode() throws Exception {
 		
-		MessageFactoryConfigurator configurator = new MessageFactoryConfigurator();
-		configurator.registerMessage(HeartBeat.class);
-		configurator.registerMessage(TestRequest.class);
-		
-		JsonMessageFactory messageFactory = new JsonMessageFactory(configurator);
+		JsonMessageFactory messageFactory = new JsonMessageFactory();
 		StringWriter writer = new StringWriter();
 	
 		HeartBeat g = new HeartBeat();
@@ -35,34 +31,15 @@ public class TestJsonMessageFactory {
 		list.add(new WithSeqnumWrapper(1, g));
 		messageFactory.encodeMessage(list, writer);
 		
-		assertEquals("[{\"seqnum\":1,\"message\":{\"messageType\":\"HeartBeat\"}}]", writer.toString());
-		
-	}
-	
-	@Test(expected=EncodingException.class)
-	public void testSingleEncodeNegative() throws Exception {
-		
-		MessageFactoryConfigurator configurator = new MessageFactoryConfigurator();
-		
-		JsonMessageFactory messageFactory = new JsonMessageFactory(configurator);
-		StringWriter writer = new StringWriter();
-	
-		HeartBeat g = new HeartBeat();
-		List<WithSeqnumWrapper> list = new ArrayList<>();
-		list.add(new WithSeqnumWrapper(1, g));
-		messageFactory.encodeMessage(list, writer);
+		assertEquals("[{\"seqnum\":1,\"message\":{\"messageType\":\"com.exactprosystems.webchannels.messages.HeartBeat\"}}]", writer.toString());
 		
 	}
 	
 	@Test
 	public void testSingleDecode() throws Exception {
 		
-		MessageFactoryConfigurator configurator = new MessageFactoryConfigurator();
-		configurator.registerMessage(HeartBeat.class);
-		configurator.registerMessage(TestRequest.class);
-		
-		JsonMessageFactory messageFactory = new JsonMessageFactory(configurator);
-		StringReader reader = new StringReader("[{\"seqnum\":1,\"message\":{\"messageType\":\"HeartBeat\"}}]");
+		JsonMessageFactory messageFactory = new JsonMessageFactory();
+		StringReader reader = new StringReader("[{\"seqnum\":1,\"message\":{\"messageType\":\"com.exactprosystems.webchannels.messages.HeartBeat\"}}]");
 	
 		List<WithSeqnumWrapper> list = messageFactory.decodeMessage(reader);
 		assertEquals(1, list.size());
@@ -70,20 +47,8 @@ public class TestJsonMessageFactory {
 		WithSeqnumWrapper wrapper = list.get(0);
 		assertEquals(1, wrapper.getSeqnum());
 		
-		AbstractMessage message = wrapper.getMessage();
+		Object message = wrapper.getMessage();
 		assertTrue(message instanceof HeartBeat);
-		
-	}
-	
-	@Test(expected=DecodingException.class)
-	public void testSingleDecodeNegative() throws Exception {
-		
-		MessageFactoryConfigurator configurator = new MessageFactoryConfigurator();
-		
-		JsonMessageFactory messageFactory = new JsonMessageFactory(configurator);
-		StringReader reader = new StringReader("[{\"seqnum\":1,\"message\":{\"messageType\":\"HeartBeat\"}}]");
-	
-		messageFactory.decodeMessage(reader);
 		
 	}
 	

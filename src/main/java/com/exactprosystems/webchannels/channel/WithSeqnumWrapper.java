@@ -1,16 +1,15 @@
 package com.exactprosystems.webchannels.channel;
 
-import com.exactprosystems.webchannels.messages.AbstractMessage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WithSeqnumWrapper {
 
 	private final long seqnum;
 	
-	private final AbstractMessage message;
+	private final Object message;
 
 	public WithSeqnumWrapper(@JsonProperty("seqnum") long seqnum, 
-			@JsonProperty("message") AbstractMessage message) {
+			@JsonProperty("message") Object message) {
 		super();
 		this.seqnum = seqnum;
 		this.message = message;
@@ -20,7 +19,7 @@ public class WithSeqnumWrapper {
 		return seqnum;
 	}
 
-	public AbstractMessage getMessage() {
+	public Object getMessage() {
 		return message;
 	}
 

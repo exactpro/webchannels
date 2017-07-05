@@ -15,7 +15,6 @@ import com.exactprosystems.webchannels.enums.ChannelStatus;
 import com.exactprosystems.webchannels.exceptions.RecoverException;
 import com.exactprosystems.webchannels.messages.AbstractMessage;
 import com.exactprosystems.webchannels.messages.AdminMessage;
-import com.exactprosystems.webchannels.messages.BusinessMessage;
 import com.exactprosystems.webchannels.messages.CloseChannel;
 import com.exactprosystems.webchannels.messages.HeartBeat;
 import com.exactprosystems.webchannels.messages.ResendRequest;
@@ -132,7 +131,7 @@ public class WebSocketChannel extends AbstractChannel {
 	@Override
 	protected void processInputMessage(WithSeqnumWrapper wrapper) {
 		
-		AbstractMessage message = wrapper.getMessage();
+		Object message = wrapper.getMessage();
 		long seqnum = wrapper.getSeqnum();
 		long expectedSeqnum = inputSeqnum + 1;
 		
@@ -145,9 +144,9 @@ public class WebSocketChannel extends AbstractChannel {
 		if (seqnum == expectedSeqnum) {
 		
 			if (inputMessageQueue.isRecovered()) {
-				if (message instanceof BusinessMessage) {
-					handleBusinessMessage((BusinessMessage) message, seqnum);
-				}
+				//if (message instanceof BusinessMessage) {
+					handleBusinessMessage(message, seqnum);
+				//}
 			} else {
 				logger.info("Stash message with seqnum {} on {}", seqnum, this);
 				inputMessageQueue.add(wrapper);
@@ -178,9 +177,9 @@ public class WebSocketChannel extends AbstractChannel {
 				
 				List<WithSeqnumWrapper> messages = inputMessageQueue.tryRecover();
 				for (WithSeqnumWrapper restored : messages) {
-					if (restored.getMessage() instanceof BusinessMessage) {
-						handleBusinessMessage((BusinessMessage) restored.getMessage(), restored.getSeqnum());
-					}
+					//if (restored.getMessage() instanceof BusinessMessage) {
+						handleBusinessMessage(restored.getMessage(), restored.getSeqnum());
+					//}
 				}
 				
 				if (inputMessageQueue.isRecovered()) {
@@ -207,8 +206,8 @@ public class WebSocketChannel extends AbstractChannel {
 		
 	}
 	
-	private void handleBusinessMessage(BusinessMessage message, long seqnum) {
-		AbstractMessage response = this.getHandler().onReceive(message, seqnum);
+	private void handleBusinessMessage(Object message, long seqnum) {
+		Object response = this.getHandler().onReceive(message, seqnum);
 		if (response != null) {
 			this.sendMessage(response);
 		}

@@ -22,13 +22,13 @@ public interface IChannelHandler {
 	 * @param message {@link AbstractMessage}
 	 * @return response
 	 */
-	AbstractMessage onReceive(AbstractMessage message, long seqnum);
+	Object onReceive(Object message, long seqnum);
 	
 	/**
 	 *  {@link AbstractChannel} message send event handler
 	 * @param message {@link AbstractMessage}
 	 */
-	void onSend(AbstractMessage message, long seqnum);
+	void onSend(Object message, long seqnum);
 	
 	/**
 	 * {@link AbstractChannel} close event handler

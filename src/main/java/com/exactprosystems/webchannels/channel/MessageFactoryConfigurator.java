@@ -8,6 +8,7 @@ import org.reflections.Reflections;
 
 import com.exactprosystems.webchannels.messages.AbstractMessage;
 
+@Deprecated
 public class MessageFactoryConfigurator {
 
 	private final List<Class<?>> classes;

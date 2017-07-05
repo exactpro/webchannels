@@ -35,8 +35,7 @@ public class TestMessagesOrder {
 		executor = MoreExecutors.sameThreadExecutor();
 		settings = new ChannelSettings(); 
 		
-		MessageFactoryConfigurator configurator = new MessageFactoryConfigurator();
-		messageFactory = new JsonMessageFactory(configurator);
+		messageFactory = new JsonMessageFactory();
 		
 	}
 	
@@ -54,15 +53,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -118,15 +117,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -188,15 +187,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -261,15 +260,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -334,15 +333,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -407,15 +406,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public AbstractMessage onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -489,15 +488,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<Object>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -559,15 +558,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -623,15 +622,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -693,15 +692,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -766,15 +765,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -839,15 +838,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -912,15 +911,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;
@@ -994,15 +993,15 @@ public class TestMessagesOrder {
 			
 			private long expectedSeqnum = 1;
 			
-			private List<AbstractMessage> sentMessages = new ArrayList<AbstractMessage>();
+			private List<Object> sentMessages = new ArrayList<>();
 			
 			@Override
-			public void onSend(AbstractMessage message, long seqnum) {
+			public void onSend(Object message, long seqnum) {
 				sentMessages.add(message);
 			}
 			
 			@Override
-			public AbstractMessage onReceive(AbstractMessage message, long seqnum) {
+			public Object onReceive(Object message, long seqnum) {
 				assertEquals(expectedSeqnum, seqnum);
 				expectedSeqnum++;
 				return null;

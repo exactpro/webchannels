@@ -100,7 +100,7 @@ public abstract class AbstractChannel {
 	 * Put message in internal queue for future processing
 	 * @param message {@link AbstractMessage}
 	 */
-	public void sendMessage(AbstractMessage message) {
+	public void sendMessage(Object message) {
 		taskQueue.offer(new MessageEvent(message, Direction.OUT, null));
 		trySubmitExecutionTask();
 	}

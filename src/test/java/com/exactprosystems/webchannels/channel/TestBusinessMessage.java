@@ -1,10 +1,9 @@
 package com.exactprosystems.webchannels.channel;
 
-import com.exactprosystems.webchannels.messages.BusinessMessage;
 import com.exactprosystems.webchannels.messages.ChannelsMessage;
 
 @ChannelsMessage
-public class TestBusinessMessage extends BusinessMessage {
+public class TestBusinessMessage {
 
 	@Override
 	public String toString() {
