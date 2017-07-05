@@ -121,7 +121,7 @@ public abstract class AbstractChannel {
 					processInputMessage((WithSeqnumWrapper) wrapper.getMessage());
 					break;
 				case OUT:
-					processOutputMessage((AbstractMessage) wrapper.getMessage());
+					processOutputMessage(wrapper.getMessage());
 					break;
 				default:
 					throw new RuntimeException("Unsupported direction");
@@ -156,7 +156,7 @@ public abstract class AbstractChannel {
 
 	protected abstract void onPoll();
 
-	protected abstract void processOutputMessage(AbstractMessage message);
+	protected abstract void processOutputMessage(Object message);
 
 	protected abstract void processInputMessage(WithSeqnumWrapper message);
 

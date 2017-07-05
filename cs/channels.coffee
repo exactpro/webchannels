@@ -74,13 +74,13 @@ class @Channel
         @to = 0
 
     sendHeartBeat: () =>
-        @sendRequest MessageFactory.get().create('HeartBeat')
+        @sendRequest MessageFactory.get().create('com.exactprosystems.webchannels.messages.HeartBeat')
         delta = Date.now() - @lastSendTime
         @logger.debug @.toString() + ' Send HeartBeat after ' + delta + ' ms inactivity'
         return
 
     checkConnection: () =>
-        @sendRequest MessageFactory.get().create('TestRequest')
+        @sendRequest MessageFactory.get().create('com.exactprosystems.webchannels.messages.TestRequest')
         delta = Date.now() - @lastUpdateTime
         @logger.info @.toString() + ' Send TestRequest after ' + delta + ' ms inactivity'
         return
@@ -124,7 +124,7 @@ class @Channel
                 @httpSendTask.schedule @ioInterval
                 uniqId = @id++
                 @logger.debug @.toString() + ' Send new polling request. Atempt = ' + @connectAtemps + '. Id =' + uniqId
-                message = MessageFactory.get().create('PollingRequest')
+                message = MessageFactory.get().create('com.exactprosystems.webchannels.messages.PollingRequest')
                 http = new XMLHttpRequest()
                 if http.responseType?
                     compressionSupported = true
@@ -226,7 +226,7 @@ class @Channel
         startTime = Date.now()
         while  Date.now() - startTime < @maxDispatchTime and @receivedMessages.length > 0
             message = @receivedMessages.shift()
-            event = 'on' + message['messageType']
+            event = message['messageType']
             @logger.debug @.toString() + ' Dispatch event: ' + event
             try
                 if event of @eventHandlers
@@ -253,7 +253,7 @@ class @Channel
             if expectedSeqnum == 1
                 @disconnect()
                 throw new Error("Connection closed on client")
-            resendRequest = MessageFactory.get().create('ResendRequest')
+            resendRequest = MessageFactory.get().create('com.exactprosystems.webchannels.messages.ResendRequest')
             resendRequest.from = expectedSeqnum
             resendRequest.to = seqnum
             @sendRequest resendRequest
@@ -313,7 +313,7 @@ class @Channel
     resendRequest: () =>
         if not @isRecovered()
             @logger.info @.toString() + ' Try to recover messages from ' + @from + ' to ' + @to + ' again'
-            resendRequest = MessageFactory.get().create('ResendRequest')
+            resendRequest = MessageFactory.get().create('com.exactprosystems.webchannels.messages.ResendRequest')
             resendRequest.from = @from
             resendRequest.to = @to
             @sendRequest resendRequest
@@ -325,7 +325,7 @@ class @Channel
             @logger.debug @.toString() + 'HeartBeat received'
         else if message['messageType'] == 'TestRequest'
             @logger.info @.toString() + ' TestRequest received'
-            @sendRequest MessageFactory.get().create('HeartBeat')
+            @sendRequest MessageFactory.get().create('com.exactprosystems.webchannels.messages.HeartBeat')
         else if message['messageType'] == 'ResendRequest'
             @logger.info @.toString() + ' ResendRequest received from ' + message.from + ' to ' + message.to
             if message.from == 1

@@ -253,7 +253,7 @@ public class HttpChannel extends AbstractChannel {
 	}
 	
 	@Override
-	protected void processOutputMessage(AbstractMessage message) {
+	protected void processOutputMessage(Object message) {
 		
 		WithSeqnumWrapper wrapper = new WithSeqnumWrapper(outputSeqnum++, message);
 		outputMessageQueue.offer(wrapper);
