@@ -3,14 +3,12 @@ package com.exactprosystems.webchannels.channel;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
-import java.util.zip.DeflaterInputStream;
 import java.util.zip.InflaterInputStream;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.exactprosystems.webchannels.messages.PollingRequest;
@@ -37,15 +35,15 @@ public class HttpChannelProcessor extends AbstractChannelProcessor{
 		AbstractChannel channel = channels.get(channelId);
 
 		if (channel == null) {
-			HttpSession session = ((HttpServletRequest) context.getRequest()).getSession(true);
-			ChannelSettings settings = getSettings(session, context.getRequest());
-			channel = channelFactory.createChannel(channelId, settings, executor);
+			HttpSession httpSession = ((HttpServletRequest) context.getRequest()).getSession(true);
+			ChannelSettings settings = getSettings(httpSession, context.getRequest());
+			channel = channelFactory.createChannel(channelId, settings, executor, httpSession);
 			AbstractChannel prev = channels.putIfAbsent(channelId, channel);
 			if (prev != null) {
 				channel = prev;
 			} else {
 				channel.initHandler();
-				SessionContrtoller.getInstance().registerChannel(channel, session);
+				SessionContrtoller.getInstance().registerChannel(channel, httpSession);
 			}
 		}
 		

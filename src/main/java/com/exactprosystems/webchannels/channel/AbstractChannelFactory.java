@@ -2,7 +2,6 @@ package com.exactprosystems.webchannels.channel;
 
 import java.util.concurrent.ExecutorService;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -31,12 +30,6 @@ public abstract class AbstractChannelFactory {
 		return handlerFactory;
 	}
 
-	/**
-	 * Returns concrete channel depending factory implementation
-	 * @param channelId channel ID
-	 * @param handler {@link IChannelHandler} handler
-	 * @return {@link AbstractChannel} concrete channel
-	 */
-	public abstract AbstractChannel createChannel(String channelId, ChannelSettings settings, ExecutorService executor);
+	public abstract AbstractChannel createChannel(String channelId, ChannelSettings settings, ExecutorService executor, HttpSession httpSession);
 	
 }

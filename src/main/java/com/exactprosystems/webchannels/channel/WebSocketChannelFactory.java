@@ -2,7 +2,6 @@ package com.exactprosystems.webchannels.channel;
 
 import java.util.concurrent.ExecutorService;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 
 public class WebSocketChannelFactory extends AbstractChannelFactory {
@@ -12,8 +11,8 @@ public class WebSocketChannelFactory extends AbstractChannelFactory {
 	}
 	
 	@Override
-	public AbstractChannel createChannel(String channelId, ChannelSettings settings, ExecutorService executor) {
-		return new WebSocketChannel(getHandlerFactory().createHandler(), channelId, settings, getMessageFactory(), executor);
+	public AbstractChannel createChannel(String channelId, ChannelSettings settings, ExecutorService executor, HttpSession httpSession) {
+		return new WebSocketChannel(getHandlerFactory().createHandler(), channelId, settings, getMessageFactory(), executor, httpSession);
 	}
 
 }

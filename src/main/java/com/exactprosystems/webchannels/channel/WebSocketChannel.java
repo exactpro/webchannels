@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.zip.DeflaterOutputStream;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
 
 import com.exactprosystems.webchannels.enums.ChannelStatus;
 import com.exactprosystems.webchannels.exceptions.RecoverException;
-import com.exactprosystems.webchannels.messages.AbstractMessage;
 import com.exactprosystems.webchannels.messages.AdminMessage;
 import com.exactprosystems.webchannels.messages.CloseChannel;
 import com.exactprosystems.webchannels.messages.HeartBeat;
@@ -49,9 +49,9 @@ public class WebSocketChannel extends AbstractChannel {
 	private long lastResendRequestTime;
 	
 	public WebSocketChannel(IChannelHandler handler, String channelId, ChannelSettings settings,
-			AbstactMessageFactory messageFactory, ExecutorService executor) {
+			AbstactMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
 		
-		super(handler, channelId, settings, messageFactory, executor);
+		super(handler, channelId, settings, messageFactory, executor, httpSession);
 		
 		outputMessageQueue = new OutputMessagesBuffer();
 		inputMessageQueue = new InputMessagesBuffer();

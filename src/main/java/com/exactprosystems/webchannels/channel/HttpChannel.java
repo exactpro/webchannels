@@ -10,10 +10,10 @@ import java.util.zip.DeflaterOutputStream;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.exactprosystems.webchannels.enums.ChannelStatus;
 import com.exactprosystems.webchannels.exceptions.RecoverException;
-import com.exactprosystems.webchannels.messages.AbstractMessage;
 import com.exactprosystems.webchannels.messages.AdminMessage;
 import com.exactprosystems.webchannels.messages.CloseChannel;
 import com.exactprosystems.webchannels.messages.HeartBeat;
@@ -49,9 +49,9 @@ public class HttpChannel extends AbstractChannel {
 	private long lastResendRequestTime;
 	
 	public HttpChannel(IChannelHandler handler, String id, ChannelSettings settings, 
-			AbstactMessageFactory messageFactory, ExecutorService executor) {
+			AbstactMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
 				
-		super(handler, id, settings, messageFactory, executor);
+		super(handler, id, settings, messageFactory, executor, httpSession);
 		
 		outputMessageQueue = new OutputMessagesBuffer();
 		inputMessageQueue = new InputMessagesBuffer();

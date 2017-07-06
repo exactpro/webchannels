@@ -90,7 +90,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor);
+		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -154,7 +154,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor);
+		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -224,7 +224,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor);
+		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -297,7 +297,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor);
+		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -370,7 +370,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor);
+		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -443,7 +443,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor);
+		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -525,7 +525,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor);
+		HttpChannel channel = new HttpChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -595,7 +595,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor);
+		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -659,7 +659,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor);
+		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -729,7 +729,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor);
+		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -802,7 +802,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor);
+		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -875,7 +875,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor);
+		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -948,7 +948,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor);
+		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		
@@ -1030,7 +1030,7 @@ public class TestMessagesOrder {
 			
 		};
 		
-		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor);
+		WebSocketChannel channel = new WebSocketChannel(handler, "test1", settings, messageFactory, executor, null);
 		
 		channel.onCreate();
 		

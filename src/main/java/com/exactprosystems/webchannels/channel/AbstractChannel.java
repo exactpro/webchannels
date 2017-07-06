@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,8 @@ public abstract class AbstractChannel {
 	
 	private final StatCollector statCollector;
 	
+	private final HttpSession httpSession;
+	
 	private volatile ChannelStatus status;
 	
 	/**
@@ -46,7 +50,7 @@ public abstract class AbstractChannel {
 	 * @param channelId channel id
 	 */
 	public AbstractChannel(IChannelHandler handler, String channelId, ChannelSettings settings, 
-			AbstactMessageFactory messageFactory, ExecutorService executor) {
+			AbstactMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
 		this.handler = handler;
 		this.settings = settings;
 		this.taskQueue = new ConcurrentLinkedQueue<Object>();
@@ -56,6 +60,7 @@ public abstract class AbstractChannel {
 		this.statCollector = StatCollector.getInstance();
 		this.processing = new AtomicBoolean(false);
 		this.status = ChannelStatus.CREATED;
+		this.httpSession = httpSession;
 	}
 	
 	public void initHandler() {
@@ -217,6 +222,10 @@ public abstract class AbstractChannel {
 		return messageFactory;
 	}
 	
+	public HttpSession getHttpSession() {
+		return httpSession;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

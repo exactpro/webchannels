@@ -1,6 +1,5 @@
 package com.exactprosystems.webchannels.channel;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -32,7 +31,7 @@ public class WebSocketChannelProcessor extends AbstractChannelProcessor{
 		if (channel == null) {
 			HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
 			ChannelSettings settings = getSettings(httpSession, null);
-			channel = channelFactory.createChannel(channelId, settings, executor);
+			channel = channelFactory.createChannel(channelId, settings, executor, httpSession);
 			AbstractChannel prev = channels.putIfAbsent(channel.getID(), channel);
 			if (prev != null) {
 				channel.close();
