@@ -321,12 +321,12 @@ class @Channel
         return
 
     handleAdminMessage: (message) =>
-        if message['messageType'] == 'HeartBeat'
+        if message['messageType'] == 'com.exactprosystems.webchannels.messages.HeartBeat'
             @logger.debug @.toString() + 'HeartBeat received'
-        else if message['messageType'] == 'TestRequest'
+        else if message['messageType'] == 'com.exactprosystems.webchannels.messages.TestRequest'
             @logger.info @.toString() + ' TestRequest received'
             @sendRequest MessageFactory.get().create('com.exactprosystems.webchannels.messages.HeartBeat')
-        else if message['messageType'] == 'ResendRequest'
+        else if message['messageType'] == 'com.exactprosystems.webchannels.messages.ResendRequest'
             @logger.info @.toString() + ' ResendRequest received from ' + message.from + ' to ' + message.to
             if message.from == 1
                 @disconnect()
@@ -350,7 +350,7 @@ class @Channel
         return
 
     handleBusinessMessage: (message) =>
-        if message['messageType'] != 'HeartBeat' and message['messageType'] != 'TestRequest' and message['messageType'] != 'ResendRequest'
+        if message['messageType'] != 'com.exactprosystems.webchannels.messages.HeartBeat' and message['messageType'] != 'com.exactprosystems.webchannels.messages.TestRequest' and message['messageType'] != 'com.exactprosystems.webchannels.messages.ResendRequest'
             @receivedMessages.push message
             @dispacthTask.schedule 10
         return
