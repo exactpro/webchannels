@@ -257,11 +257,6 @@ public class WebSocketChannel extends AbstractChannel {
 	@Override
 	protected void onPoll() {
 		
-		if (this.getStatus() == ChannelStatus.CLOSED) {
-			logger.trace("Nothing to processing. {} already destoryed.", this);
-			return;
-		}
-		
 		long currentTime = System.currentTimeMillis();
 		
 		if (currentTime - lastReceiveTime > this.getChannelSettings().getDisconnectTimeout()) {

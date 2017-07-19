@@ -263,12 +263,7 @@ public class HttpChannel extends AbstractChannel {
 	}
 	
 	@Override
-	protected void onPoll() {
-		
-		if (this.getStatus() == ChannelStatus.CLOSED) {
-			logger.trace("Nothing to processing. {} already destoryed.", this);
-			return;
-		}
+	protected void onPoll() {		
 		
 		long currentTime = System.currentTimeMillis();
 		
