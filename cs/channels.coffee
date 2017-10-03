@@ -103,7 +103,10 @@ class @Channel
         @logger.error @.toString() + ' Polling request error. Id = ' + uniqId
         @connectAtemps++
         if @curStatus != 'error' # to prevent error spamming
-            handler() for handler in @errorHandlers
+            for handler in @errorHandlers
+                remove = handler()
+                if remove
+                    @removeHandler 'error', handler
             @curStatus = 'error'
         return
 
@@ -112,7 +115,10 @@ class @Channel
         @connectAtemps = 0
         @ioInterval = 100
         if @curStatus != 'success' # to prevent success spamming
-            handler() for handler in @successHandlers
+            for handler in @successHandlers
+                remove = handler()
+                if remove
+                    @removeHandler 'success', handler
             @curStatus = 'success'
         @processMessage message for message in data
         return
@@ -183,7 +189,10 @@ class @Channel
                     @connectAtemps = 0
                     @ioInterval = 100
                     if @curStatus != 'success'
-                        handler() for handler in @successHandlers
+                        for handler in @successHandlers
+                            remove = handler()
+                            if remove
+                                @removeHandler 'success', handler
                         @curStatus = 'success'
                     @websocketSendTask.schedule @ioInterval
                     return
@@ -215,7 +224,10 @@ class @Channel
                 socket.onerror = (e) =>
                     @logger.error @.toString() + ' Socket error: ' + e + '. Id = ' + uniqId
                     if @curStatus != 'error'
-                        handler() for handler in @errorHandlers
+                        for handler in @errorHandlers
+                            remove = handler()
+                            if remove
+                                @removeHandler 'error', handler
                         @curStatus = 'error'
                     return
                 @socket = socket
@@ -232,7 +244,10 @@ class @Channel
             @logger.debug @.toString() + ' Dispatch event: ' + event
             try
                 if event of @eventHandlers
-                    handler message for handler in @eventHandlers[event]
+                    for handler in @eventHandlers[event]
+                        remove = handler message
+                        if remove
+                            @removeHandler event, handler
             catch e
                 @logger.error @.toString() + ' ' + e.message, e
         if @receivedMessages.length > 0
@@ -418,12 +433,12 @@ class @Channel
 
     removeHandler: (event, handler) =>
         if event == 'success'
-            @successHandlers.splice i, 1 for func, i in @successHandlers when handler == func
+            @successHandlers.splice i, 1 for fn, i in @successHandlers when fn == handler
         else if event == 'error'
-            @successHandlers.splice i, 1 for func, i in @errorHandlers when handler == func
+            @errorHandlers.splice i, 1 for fn, i in @errorHandlers when fn == handler
         else
             if event of @eventHandlers
-                @eventHandlers[event].splice i, 1 for func, i in @eventHandlers[event] when handler == func
+                @eventHandlers[event].splice i, 1 for fn, i in @eventHandlers[event] when handler == fn
         return
 
     httpSend: () =>
