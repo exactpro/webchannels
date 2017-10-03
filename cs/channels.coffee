@@ -1,8 +1,7 @@
 class @Channel
 
-    constructor: (_url, _useWebSockets, _socketsUrl, _logger, _settings) ->
+    constructor: (_url, _socketsUrl, _logger, _settings) ->
         @url = _url
-        @useWebSockets = _useWebSockets
         @socketsUrl = _socketsUrl
         if not @socketsUrl?
             @socketsUrl = @url
@@ -220,6 +219,9 @@ class @Channel
                         @curStatus = 'error'
                     return
                 @socket = socket
+            else
+                @sendNewPollingRequestTask.schedule @ioInterval
+                @sendNewSocketRequestTask.cancel()
         return
 
     dispacthEvent: () =>
@@ -359,7 +361,7 @@ class @Channel
         @logger.info @.toString() + ' connecting'
         @pollingAborted = false
         @curStatus = null
-        if @useWebSockets and 'WebSocket' of window
+        if @socketsUrl and 'WebSocket' of window
             @sendNewSocketRequestTask.schedule @ioInterval
         else
             @sendNewPollingRequestTask.schedule @ioInterval
