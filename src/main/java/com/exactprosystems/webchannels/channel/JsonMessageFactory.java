@@ -33,6 +33,7 @@ public class JsonMessageFactory extends AbstactMessageFactory {
 		this.factory.disable(Feature.AUTO_CLOSE_TARGET); 
 		this.mapper = new ObjectMapper(factory);
 		this.mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "messageType");
+		this.mapper.findAndRegisterModules();
 	}
 	
 	@Override
