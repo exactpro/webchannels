@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper.DefaultTypeResolverBuilder;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 
 public class JsonMessageFactory extends AbstactMessageFactory {
@@ -32,6 +33,8 @@ public class JsonMessageFactory extends AbstactMessageFactory {
 		this.factory = new JsonFactory();
 		this.factory.disable(Feature.AUTO_CLOSE_TARGET); 
 		this.mapper = new ObjectMapper(factory);
+		this.mapper.disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
+		this.mapper.disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
 		this.mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "messageType");
 		this.mapper.findAndRegisterModules();
 	}
