@@ -43,7 +43,7 @@ public class StatCollector {
 	
 	private final ReentrantLock lock;
 	
-	private boolean started;
+	private volatile boolean started;
 
 	private Thread processorThread;
 
@@ -78,7 +78,9 @@ public class StatCollector {
 	}
 	
 	public void pubStatistics(AbstractChannel channel, ChannelStats stats) {
-		statsQueue.offer(stats);
+		if (started) {
+			statsQueue.offer(stats);
+		}
 	}
 
 	public void start() {
@@ -100,20 +102,16 @@ public class StatCollector {
 			if (started == true) {
 				statsProcessor.stop();
 				try {
-					processorThread.join();
+					processorThread.join(SECOND);
 				} catch (InterruptedException e) {
 					logger.error(e.getMessage(), e);
 				}
-				statsProcessor = null;
-				processorThread = null;
 				cleaner.stop();
 				try {
-					cleanerThread.join();
+					cleanerThread.join(SECOND);
 				} catch (InterruptedException e) {
 					logger.error(e.getMessage(), e);
 				}
-				cleaner = null;
-				cleanerThread = null;
 				started = false;
 			}
 		}
