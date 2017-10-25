@@ -153,14 +153,14 @@ class @Channel
                                     data = JSON.parse unzip
                                     @onSuccess uniqId, data
                                 catch e
-                                    @logger.error @.toString() + ' ' + e, e
+                                    @logger.error @.toString() + ' ' + e.message, e
                         else
                             if http.responseText?
                                 try
                                     data = JSON.parse http.responseText
                                     @onSuccess uniqId, data
                                 catch e
-                                    @logger.error @.toString() + ' ' + e, e
+                                    @logger.error @.toString() + ' ' + e.message, e
                         @onComplete uniqId, http
                     if http.readyState == 4 and http.status != 200
                         @onError uniqId
@@ -242,14 +242,14 @@ class @Channel
             message = @receivedMessages.shift()
             event = message['messageType']
             @logger.debug @.toString() + ' Dispatch event: ' + event
-            try
-                if event of @eventHandlers
-                    for handler in @eventHandlers[event]
-                        remove = handler message
-                        if remove
-                            @removeHandler event, handler
-            catch e
-                @logger.error @.toString() + ' ' + e.message, e
+            if event of @eventHandlers
+                for handler in @eventHandlers[event]
+                try
+                    remove = handler message
+                    if remove
+                        @removeHandler event, handler
+	            catch e
+	                @logger.error @.toString() + ' ' + e.message, e
         if @receivedMessages.length > 0
             @dispacthTask.schedule 10
         return
