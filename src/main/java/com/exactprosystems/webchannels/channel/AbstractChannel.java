@@ -117,10 +117,6 @@ public abstract class AbstractChannel {
 	}
 	
 	protected void processTaskQueue() {
-		if (this.getStatus() == ChannelStatus.CLOSED) {
-			logger.trace("Nothing to processing. {} already destoryed.", this);
-			return;
-		}
 		Object message = taskQueue.poll();
 		if (message != null) {
 			if (message instanceof MessageEvent) {
@@ -207,7 +203,7 @@ public abstract class AbstractChannel {
 	}
 	
 	public boolean isTaskQueueEmpty() {
-		return taskQueue.isEmpty();
+		return this.getStatus() == ChannelStatus.CLOSED || taskQueue.isEmpty();
 	}
 
 	public void setStatus(ChannelStatus status) {
