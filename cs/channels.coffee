@@ -244,12 +244,12 @@ class @Channel
             @logger.debug @.toString() + ' Dispatch event: ' + event
             if event of @eventHandlers
                 for handler in @eventHandlers[event]
-                try
-                    remove = handler message
-                    if remove
-                        @removeHandler event, handler
-	            catch e
-	                @logger.error @.toString() + ' ' + e.message, e
+                    try
+                        remove = handler message
+                        if remove
+                            @removeHandler event, handler
+                    catch e
+                        @logger.error @.toString() + ' ' + e.message, e
         if @receivedMessages.length > 0
             @dispacthTask.schedule 10
         return
