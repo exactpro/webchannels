@@ -31,7 +31,6 @@ public class JsonMessageFactory extends AbstactMessageFactory {
 	
 	public JsonMessageFactory() {
 		this.factory = new JsonFactory();
-		this.factory.disable(Feature.AUTO_CLOSE_TARGET); 
 		this.mapper = new ObjectMapper(factory);
 		this.mapper.disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
 		this.mapper.disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);

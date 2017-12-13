@@ -288,14 +288,14 @@ public class WebSocketChannel extends AbstractChannel {
 						messages = outputMessageQueue.poll(this.getChannelSettings().getMaxCountToSend());
 						
 						if (getChannelSettings().isCompressionEnabled()) {
-							OutputStream output = socketContext.getBasicRemote().getSendStream();
-							OutputStream gzipOutput = new DeflaterOutputStream(output);
-							this.getMessageFactory().encodeMessage(messages, gzipOutput);
-							gzipOutput.flush();
+							try (OutputStream output = socketContext.getBasicRemote().getSendStream();
+									OutputStream gzipOutput = new DeflaterOutputStream(output)) {
+								this.getMessageFactory().encodeMessage(messages, gzipOutput);
+							}
 						} else {
-							Writer output = socketContext.getBasicRemote().getSendWriter();
-							this.getMessageFactory().encodeMessage(messages, output);
-							output.flush();
+							try (Writer output = socketContext.getBasicRemote().getSendWriter()) {
+								this.getMessageFactory().encodeMessage(messages, output);
+							}
 						}
 						
 						lastSendTime = currentTime;
