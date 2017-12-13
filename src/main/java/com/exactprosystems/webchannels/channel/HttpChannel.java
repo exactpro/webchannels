@@ -294,14 +294,14 @@ public class HttpChannel extends AbstractChannel {
 					messages = outputMessageQueue.poll(this.getChannelSettings().getMaxCountToSend());
 					
 					if (getChannelSettings().isCompressionEnabled()) {
-						try (OutputStream output = pollingContext.getResponse().getOutputStream();
-								OutputStream gzipOutput = new DeflaterOutputStream(output)) {
-							this.getMessageFactory().encodeMessage(messages, gzipOutput);
-						}
+						OutputStream output = pollingContext.getResponse().getOutputStream();
+						OutputStream gzipOutput = new DeflaterOutputStream(output);
+						this.getMessageFactory().encodeMessage(messages, gzipOutput);
+						gzipOutput.close();
 					} else {
-						try (Writer output = pollingContext.getResponse().getWriter()) {
-							this.getMessageFactory().encodeMessage(messages, output);
-						}
+						Writer output = pollingContext.getResponse().getWriter();
+						this.getMessageFactory().encodeMessage(messages, output);
+						output.close();
 					}
 					
 					lastSendTime = currentTime;
