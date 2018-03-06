@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.reflections.Reflections;
-
 import com.exactprosystems.webchannels.messages.AbstractMessage;
 
 @Deprecated
@@ -15,18 +13,6 @@ public class MessageFactoryConfigurator {
 	
 	public MessageFactoryConfigurator() {
 		this.classes = new ArrayList<Class<?>>();
-	}
-	
-	public void registerMessage(String packageName) {
-		
-		Reflections reflections = new Reflections(packageName);
-		Set<Class<? extends AbstractMessage>> annotated = 
-	               reflections.getSubTypesOf(AbstractMessage.class);
-		
-		for (Class<?> clazz : annotated) {
-			classes.add(clazz);
-		}
-		
 	}
 
 	public void registerMessage(Class<? extends AbstractMessage> clazz) {
