@@ -252,7 +252,8 @@ public class WebSocketChannel extends AbstractChannel {
 		sentMessageQueue.add(wrapper);
 		this.getHandler().onSend(wrapper.getMessage(), wrapper.getSeqnum());
 
-		onPoll();
+		// Schedule send message to reduce latency
+		this.schedule();
 		
 	}
 	

@@ -491,10 +491,8 @@ class @Channel
         @rememberMessage(data)
         @outputMessages.push(data)
         if @socket?
-            if @socket.readyState == 1
-                @websocketSend();
-            else
-                @websocketSendTask.schedule(@ioInterval)
+            # Schedule send with minimal delay to reduce latency over websockets
+            @websocketSendTask.schedule(10)
         else if @pollingRequest
             @httpSendTask.schedule(@ioInterval)
         return
