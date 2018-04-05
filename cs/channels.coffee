@@ -479,7 +479,7 @@ class @Channel
                     @socket.send(msg)
                     @lastSendTime = Date.now()
                     @sendHeartBeatTask.delay(@heartBeatInterval)
-                @websocketSendTask.schedule(0)
+                @websocketSendTask.schedule(10)
         catch e
             @logger.error(@ + ' Can not send message request ' + e.message, e)
         return
@@ -491,7 +491,10 @@ class @Channel
         @rememberMessage(data)
         @outputMessages.push(data)
         if @socket?
-            @websocketSendTask.schedule(@ioInterval)
+            if @socket.readyState == 1
+                @websocketSend();
+            else
+                @websocketSendTask.schedule(@ioInterval)
         else if @pollingRequest
             @httpSendTask.schedule(@ioInterval)
         return

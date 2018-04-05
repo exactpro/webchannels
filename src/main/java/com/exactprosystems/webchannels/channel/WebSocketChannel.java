@@ -251,6 +251,8 @@ public class WebSocketChannel extends AbstractChannel {
 		outputMessageQueue.offer(wrapper);
 		sentMessageQueue.add(wrapper);
 		this.getHandler().onSend(wrapper.getMessage(), wrapper.getSeqnum());
+
+		onPoll();
 		
 	}
 	
