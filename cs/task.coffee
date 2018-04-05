@@ -12,24 +12,24 @@ class @Task
     schedule: (_timeout) ->
         if not @taskId?
             if @repeat == true
-                @taskId = setInterval @task, _timeout
+                @taskId = setInterval(@task, _timeout)
             else
-                @taskId = setTimeout @task, _timeout
+                @taskId = setTimeout(@task, _timeout)
         return
 
     delay: (_timeout) ->
         @cancel()
         if @repeat == true
-            @taskId = setInterval @task, _timeout
+            @taskId = setInterval(@task, _timeout)
         else
-            @taskId = setTimeout @task, _timeout
+            @taskId = setTimeout(@task, _timeout)
         return
 
     cancel: () ->
         if @taskId?
             if @repeat == true
-                clearInterval @taskId
+                clearInterval(@taskId)
             else
-                clearTimeout @taskId
+                clearTimeout(@taskId)
             @taskId = null
         return
