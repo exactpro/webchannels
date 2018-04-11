@@ -58,8 +58,8 @@ class @Channel
         @inputSeqnum = 0
         @ioInterval = 100
         @curStatus = null
-        @lastSendTime = Date.now()
-        @lastUpdateTime = @lastSendTime
+        @lastSendTime = null
+        @lastUpdateTime = null
         @sendHeartBeatTask = new Task(@sendHeartBeat)
         @checkConnectionTask = new Task(@checkConnection)
         @reconnectTask = new Task(@reconnect)
@@ -370,21 +370,22 @@ class @Channel
             @dispacthTask.schedule(10)
         return
 
-    connect: (soft = false) =>
+    connect: () =>
         @logger.info(@ + ' connecting')
         @pollingAborted = false
         @curStatus = null
+        @lastSendTime = Date.now()
+        @lastUpdateTime = @lastSendTime
         if @socketsUrl and 'WebSocket' of window
             @sendNewSocketRequestTask.schedule(@ioInterval)
         else
             @sendNewPollingRequestTask.schedule(@ioInterval)
-        if soft == false
-            @reconnectTask.delay(@disconnectTimeout)
-            @checkConnectionTask.delay(@heartBeatInterval * 2)
-            @sendHeartBeatTask.delay(@heartBeatInterval)
+        @reconnectTask.delay(@disconnectTimeout)
+        @checkConnectionTask.delay(@heartBeatInterval * 2)
+        @sendHeartBeatTask.delay(@heartBeatInterval)
         return
 
-    disconnect: (soft = false) =>
+    disconnect: () =>
         @logger.info(@ + ' disconnecting')
         @pollingAborted = true
         @curStatus = null
@@ -406,16 +407,15 @@ class @Channel
             catch e
                 @logger.error(@ + ' ' + e.message, e)
             @httpSendRequest = null
-        if soft == false
-            @reconnectTask.cancel()
-            @checkConnectionTask.cancel()
-            @sendHeartBeatTask.cancel()
-            @sendNewPollingRequestTask.cancel()
-            @sendNewSocketRequestTask.cancel()
-            @httpSendTask.cancel()
-            @websocketSendTask.cancel()
-            @dispacthTask.cancel()
-            @resendRequestTask.cancel()
+        @reconnectTask.cancel()
+        @checkConnectionTask.cancel()
+        @sendHeartBeatTask.cancel()
+        @sendNewPollingRequestTask.cancel()
+        @sendNewSocketRequestTask.cancel()
+        @httpSendTask.cancel()
+        @websocketSendTask.cancel()
+        @dispacthTask.cancel()
+        @resendRequestTask.cancel()
         return
 
     addHandler: (event, handler) =>
