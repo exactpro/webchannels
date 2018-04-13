@@ -104,7 +104,7 @@ class @Channel
         @logger.error(@ + ' Polling request error. Id = ' + uniqId)
         @connectAtemps++
         if @curStatus != 'error' # to prevent error spamming
-            for handler in @errorHandlers
+            for handler in @errorHandlers.slice()
                 remove = handler()
                 if remove == true
                     @removeHandler('error', handler)
@@ -116,7 +116,7 @@ class @Channel
         @connectAtemps = 0
         @ioInterval = 100
         if @curStatus != 'success' # to prevent success spamming
-            for handler in @successHandlers
+            for handler in @successHandlers.slice()
                 remove = handler()
                 if remove == true
                     @removeHandler('success', handler)
@@ -174,7 +174,7 @@ class @Channel
         if @pollingAborted == false and @socket == null
             uniqId = @id++
             @logger.info(@ + ' Send new socket request. Attempt = ' + @connectAtemps + '. Id = ' + uniqId)
-            if 'WebSocket' of window
+            if WebSocket
                 try
                     socket = new WebSocket(@socketsUrl + '?channelId=' + @channelId)
                 catch e
@@ -187,7 +187,7 @@ class @Channel
                     @connectAtemps = 0
                     @ioInterval = 100
                     if @curStatus != 'success'
-                        for handler in @successHandlers
+                        for handler in @successHandlers.slice()
                             remove = handler()
                             if remove == true
                                 @removeHandler('success', handler)
@@ -222,7 +222,7 @@ class @Channel
                 socket.onerror = (e) =>
                     @logger.error(@ + ' Socket error: ' + e + '. Id = ' + uniqId)
                     if @curStatus != 'error'
-                        for handler in @errorHandlers
+                        for handler in @errorHandlers.slice()
                             remove = handler()
                             if remove == true
                                 @removeHandler('error', handler)
@@ -241,7 +241,7 @@ class @Channel
             event = message['messageType']
             @logger.debug(@ + ' Dispatch event: ' + event)
             if event of @eventHandlers
-                for handler in @eventHandlers[event]
+                for handler in @eventHandlers[event].slice()
                     try
                         remove = handler(message)
                         if remove == true
@@ -376,7 +376,7 @@ class @Channel
         @curStatus = null
         @lastSendTime = Date.now()
         @lastUpdateTime = @lastSendTime
-        if @socketsUrl and 'WebSocket' of window
+        if @socketsUrl and WebSocket
             @sendNewSocketRequestTask.schedule(@ioInterval)
         else
             @sendNewPollingRequestTask.schedule(@ioInterval)
@@ -431,12 +431,13 @@ class @Channel
 
     removeHandler: (event, handler) =>
         if event == 'success'
-            @successHandlers.splice(i, 1) for fn, i in @successHandlers when fn == handler
+            @successHandlers.splice(@successHandlers.indexOf(handler), 1)
         else if event == 'error'
-            @errorHandlers.splice(i, 1) for fn, i in @errorHandlers when fn == handler
+            @errorHandlers.splice(@errorHandlers.indexOf(handler), 1)
         else
             if event of @eventHandlers
-                @eventHandlers[event].splice(i, 1) for fn, i in @eventHandlers[event] when handler == fn
+                concreteHandlers = @eventHandlers[event]
+                concreteHandlers.splice(concreteHandlers.indexOf(handler), 1)
         return
 
     httpSend: () =>
