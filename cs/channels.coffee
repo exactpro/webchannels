@@ -431,13 +431,19 @@ class @Channel
 
     removeHandler: (event, handler) =>
         if event == 'success'
-            @successHandlers.splice(@successHandlers.indexOf(handler), 1)
+            index = @successHandlers.indexOf(handler)
+            if index != -1
+                @successHandlers.splice(index, 1)
         else if event == 'error'
-            @errorHandlers.splice(@errorHandlers.indexOf(handler), 1)
+            index = @errorHandlers.indexOf(handler);
+            if index != -1
+                @errorHandlers.splice(index, 1)
         else
             if event of @eventHandlers
                 concreteHandlers = @eventHandlers[event]
-                concreteHandlers.splice(concreteHandlers.indexOf(handler), 1)
+                index = concreteHandlers.indexOf(handler)
+                if index != -1
+                    concreteHandlers.splice(index, 1)
         return
 
     httpSend: () =>
