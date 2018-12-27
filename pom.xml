@@ -5,8 +5,32 @@
 	<groupId>com.exactpro.webchannels</groupId>
 	<artifactId>webchannels</artifactId>
 	<packaging>jar</packaging>
-	<version>2.1.1-SNAPSHOT</version>
-	<name>WebChannels</name>
+	<version>2.1.1</version>
+	<name>Exactpro WebChannels</name>
+	<description>WebChannels is java library for browser agnostic message transport with reliable delivery over standard API (websocket, XMLHttpRequest)</description>
+	<url>https://github.com/Exactpro/webchannels</url>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Dmitry Zavodchikov</name>
+			<email>dmitry.zavodchikov@exactprosystems.com</email>
+			<organization>Exactpro Systems</organization>
+			<organizationUrl>https://exactpro.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/Exactpro/webchannels</connection>
+		<developerConnection>scm:git:https://github.com/Exactpro/webchannels</developerConnection>
+		<url>https://github.com/Exactpro/webchannels</url>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,6 +60,49 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<!--
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					-->
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<quiet>true</quiet>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.Maven.plugins</groupId>
 				<artifactId>Maven-jar-plugin</artifactId>
 				<version>2.5</version>
@@ -50,6 +117,20 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.theoryinpractise</groupId>
@@ -157,10 +238,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>com.google.guava</groupId>
-		    <artifactId>guava</artifactId>
-		    <version>20.0</version>
-		    <scope>test</scope>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>20.0</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
