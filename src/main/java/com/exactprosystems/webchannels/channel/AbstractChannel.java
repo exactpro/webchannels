@@ -97,7 +97,7 @@ public abstract class AbstractChannel {
 	}
 
 	public void handleRequest(WithSeqnumWrapper message) {
-		taskQueue.offer(new OutputMessageEvent(message.getMessage()));
+		taskQueue.offer(new InputMessageEvent(message));
 		trySubmitExecutionTask();
 	}
 
@@ -121,11 +121,11 @@ public abstract class AbstractChannel {
 		Object message = taskQueue.poll();
 		if (message != null) {
 			if (message instanceof OutputMessageEvent) {
-                OutputMessageEvent event = (OutputMessageEvent) message;
-                processOutputMessage(event.getMessage());
-            } else if (message instanceof InputMessageEvent) {
-                InputMessageEvent event = (InputMessageEvent) message;
-                processInputMessage(event.getMessage());
+				OutputMessageEvent event = (OutputMessageEvent) message;
+				processOutputMessage(event.getMessage());
+			} else if (message instanceof InputMessageEvent) {
+				InputMessageEvent event = (InputMessageEvent) message;
+				processInputMessage(event.getMessage());
 			} else if (message instanceof CloseChannelEvent) {
 				onClose();
 				ChannelStats stats = getChannelStats();
