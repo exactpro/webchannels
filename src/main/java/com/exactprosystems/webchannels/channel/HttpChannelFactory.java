@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
 
 public class HttpChannelFactory extends AbstractChannelFactory {
 
-	public HttpChannelFactory(AbstactMessageFactory messageFactory, AbstractHandlerFactory handlerFactory) {
+	public HttpChannelFactory(AbstractMessageFactory messageFactory, AbstractHandlerFactory handlerFactory) {
 		super(messageFactory, handlerFactory);
 	}
 	

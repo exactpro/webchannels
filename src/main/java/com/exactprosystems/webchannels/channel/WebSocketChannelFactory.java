@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
 
 public class WebSocketChannelFactory extends AbstractChannelFactory {
 	
-	public WebSocketChannelFactory(AbstactMessageFactory messageFactory, AbstractHandlerFactory handlerFactory) {
+	public WebSocketChannelFactory(AbstractMessageFactory messageFactory, AbstractHandlerFactory handlerFactory) {
 		super(messageFactory, handlerFactory);
 	}
 	

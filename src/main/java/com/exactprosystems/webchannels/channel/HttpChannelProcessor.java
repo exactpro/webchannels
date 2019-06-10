@@ -34,7 +34,7 @@ import com.exactprosystems.webchannels.messages.PollingRequest;
 public class HttpChannelProcessor extends AbstractChannelProcessor{
 	
 	public HttpChannelProcessor(AbstractHandlerFactory handlerFactory,
-			AbstactMessageFactory messageFactory,
+			AbstractMessageFactory messageFactory,
 			ChannelSettings settings) {
 		
 		super(handlerFactory, messageFactory, settings,

@@ -29,17 +29,17 @@ import javax.servlet.http.HttpSession;
  */
 public abstract class AbstractChannelFactory {
 	
-	private final AbstactMessageFactory messageFactory;
+	private final AbstractMessageFactory messageFactory;
 	
 	private final AbstractHandlerFactory handlerFactory;
 	
-	public AbstractChannelFactory(AbstactMessageFactory messageFactory,
-			AbstractHandlerFactory handlerFactory) {
+	public AbstractChannelFactory(AbstractMessageFactory messageFactory,
+                                  AbstractHandlerFactory handlerFactory) {
 		this.messageFactory = messageFactory;
 		this.handlerFactory = handlerFactory;
 	}
 	
-	public AbstactMessageFactory getMessageFactory() {
+	public AbstractMessageFactory getMessageFactory() {
 		return messageFactory;
 	}
 

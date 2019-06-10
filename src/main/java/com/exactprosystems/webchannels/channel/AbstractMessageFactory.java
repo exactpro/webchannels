@@ -33,7 +33,7 @@ import com.exactprosystems.webchannels.messages.AbstractMessage;
  * @author dmitry.zavodchikov
  *
  */
-public abstract class AbstactMessageFactory {
+public abstract class AbstractMessageFactory {
 
 	public abstract List<WithSeqnumWrapper> decodeMessage(InputStream stream) throws DecodingException;
 

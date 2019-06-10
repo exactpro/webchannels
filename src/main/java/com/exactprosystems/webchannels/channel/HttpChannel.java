@@ -67,8 +67,8 @@ public class HttpChannel extends AbstractChannel {
 
 	private long lastResendRequestTime;
 	
-	public HttpChannel(IChannelHandler handler, String id, ChannelSettings settings, 
-			AbstactMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
+	public HttpChannel(IChannelHandler handler, String id, ChannelSettings settings,
+					   AbstractMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
 				
 		super(handler, id, settings, messageFactory, executor, httpSession);
 		

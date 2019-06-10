@@ -9,15 +9,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.exactprosystems.webchannels.channel.AbstactMessageFactory;
-import com.exactprosystems.webchannels.channel.AbstractChannel;
-import com.exactprosystems.webchannels.channel.ChannelSettings;
-import com.exactprosystems.webchannels.channel.HttpChannel;
-import com.exactprosystems.webchannels.channel.IChannelHandler;
-import com.exactprosystems.webchannels.channel.JsonMessageFactory;
-import com.exactprosystems.webchannels.channel.MessageFactoryConfigurator;
-import com.exactprosystems.webchannels.channel.WebSocketChannel;
-import com.exactprosystems.webchannels.channel.WithSeqnumWrapper;
 import com.exactprosystems.webchannels.messages.AbstractMessage;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -27,7 +18,7 @@ public class TestMessagesOrder {
 	
 	private ExecutorService executor;
 	
-	private AbstactMessageFactory messageFactory;
+	private AbstractMessageFactory messageFactory;
 	
 	@Before
 	public void init() {

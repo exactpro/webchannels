@@ -27,7 +27,7 @@ import java.util.List;
 import com.exactprosystems.webchannels.exceptions.DecodingException;
 import com.exactprosystems.webchannels.exceptions.EncodingException;
 
-public class XmlMessageFactory extends AbstactMessageFactory {
+public class XmlMessageFactory extends AbstractMessageFactory {
 
 	@Override
 	public List<WithSeqnumWrapper> decodeMessage(InputStream stream) throws DecodingException {

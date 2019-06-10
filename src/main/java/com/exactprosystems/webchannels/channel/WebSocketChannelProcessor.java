@@ -29,7 +29,7 @@ import com.exactprosystems.webchannels.web.TextMessageHandler;
 
 public class WebSocketChannelProcessor extends AbstractChannelProcessor{
 	
-	public WebSocketChannelProcessor(AbstractHandlerFactory handlerFactory, AbstactMessageFactory messageFactory, ChannelSettings settings) {
+	public WebSocketChannelProcessor(AbstractHandlerFactory handlerFactory, AbstractMessageFactory messageFactory, ChannelSettings settings) {
 		
 		super(handlerFactory, messageFactory, settings, 
 				new WebSocketChannelFactory(messageFactory, handlerFactory));

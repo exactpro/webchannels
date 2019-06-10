@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -48,7 +47,7 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 	
 	protected final AbstractChannelFactory channelFactory;
 	
-	protected final AbstactMessageFactory messageFactory;
+	protected final AbstractMessageFactory messageFactory;
 	
 	protected final ChannelSettings settings;
 	
@@ -58,7 +57,7 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 
 	private final Thread idleChannelsMonitorThread;
 	
-	public AbstractChannelProcessor (AbstractHandlerFactory handlerFactory, AbstactMessageFactory messageFactory,
+	public AbstractChannelProcessor (AbstractHandlerFactory handlerFactory, AbstractMessageFactory messageFactory,
 			ChannelSettings settings, AbstractChannelFactory channelFactory) {
 		
 		this.channels = new ConcurrentHashMap<String, AbstractChannel>();
@@ -93,7 +92,7 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 		return channelFactory;
 	}
 
-	public AbstactMessageFactory getMessageFactory() {
+	public AbstractMessageFactory getMessageFactory() {
 		return messageFactory;
 	}
 

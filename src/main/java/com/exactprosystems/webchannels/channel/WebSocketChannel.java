@@ -68,7 +68,7 @@ public class WebSocketChannel extends AbstractChannel {
 	private long lastResendRequestTime;
 	
 	public WebSocketChannel(IChannelHandler handler, String channelId, ChannelSettings settings,
-			AbstactMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
+							AbstractMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
 		
 		super(handler, channelId, settings, messageFactory, executor, httpSession);
 		

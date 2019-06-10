@@ -26,7 +26,7 @@ import javax.websocket.MessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exactprosystems.webchannels.channel.AbstactMessageFactory;
+import com.exactprosystems.webchannels.channel.AbstractMessageFactory;
 import com.exactprosystems.webchannels.channel.AbstractChannel;
 import com.exactprosystems.webchannels.channel.WithSeqnumWrapper;
 
@@ -34,11 +34,11 @@ public class TextMessageHandler implements MessageHandler.Whole<Reader> {
 
 	private static final Logger logger = LoggerFactory.getLogger(TextMessageHandler.class);
 	
-	private final AbstactMessageFactory messageFactory;
+	private final AbstractMessageFactory messageFactory;
 	
 	private final AbstractChannel channel;
 	
-	public TextMessageHandler(AbstactMessageFactory messageFactory, AbstractChannel channel) {
+	public TextMessageHandler(AbstractMessageFactory messageFactory, AbstractChannel channel) {
 		
 		logger.info("Create {} for {}", this, channel);
 		

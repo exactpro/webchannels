@@ -54,7 +54,7 @@ public abstract class AbstractChannel {
 	
 	private final AtomicBoolean processing;
 	
-	private final AbstactMessageFactory messageFactory;
+	private final AbstractMessageFactory messageFactory;
 	
 	private final StatCollector statCollector;
 	
@@ -62,8 +62,8 @@ public abstract class AbstractChannel {
 	
 	private volatile ChannelStatus status;
 
-	public AbstractChannel(IChannelHandler handler, String channelId, ChannelSettings settings, 
-			AbstactMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
+	public AbstractChannel(IChannelHandler handler, String channelId, ChannelSettings settings,
+						   AbstractMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
 		this.handler = handler;
 		this.settings = settings;
 		this.taskQueue = new ConcurrentLinkedQueue<Object>();
@@ -204,7 +204,7 @@ public abstract class AbstractChannel {
 		return settings;
 	}
 	
-	public AbstactMessageFactory getMessageFactory() {
+	public AbstractMessageFactory getMessageFactory() {
 		return messageFactory;
 	}
 	
