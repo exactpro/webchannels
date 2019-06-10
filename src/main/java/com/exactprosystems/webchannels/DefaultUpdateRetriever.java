@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+@Deprecated
 public abstract class DefaultUpdateRetriever<T extends IUpdateRequestListener> implements IUpdateRetriever {
 
 	private final Set<T> listeners;

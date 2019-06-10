@@ -20,6 +20,7 @@ package com.exactprosystems.webchannels;
 
 import com.exactprosystems.webchannels.channel.AbstractChannel;
 
+@Deprecated
 public abstract class DefaultUpdateListener implements IUpdateRequestListener {
 
 	private final String id;

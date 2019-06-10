@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutorService;
 import javax.servlet.http.HttpSession;
 
 /**
- * Abstract class for creating concrete instances of {@link AbstractChannel}
  * 
  * @author dmitry.zavodchikov
  *

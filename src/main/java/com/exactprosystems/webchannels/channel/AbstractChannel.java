@@ -61,12 +61,7 @@ public abstract class AbstractChannel {
 	private final HttpSession httpSession;
 	
 	private volatile ChannelStatus status;
-	
-	/**
-	 * Default constructor.
-	 * @param handler {@link IChannelHandler}
-	 * @param channelId channel id
-	 */
+
 	public AbstractChannel(IChannelHandler handler, String channelId, ChannelSettings settings, 
 			AbstactMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
 		this.handler = handler;
@@ -100,28 +95,17 @@ public abstract class AbstractChannel {
 		taskQueue.offer(new UnbindContextEvent(context));
 		trySubmitExecutionTask();
 	}
-	
-	/**
-	 * Defines method for handle incoming messages
-	 * @param message {@link AbstractMessage}
-	 */
+
 	public void handleRequest(WithSeqnumWrapper message) {
 		taskQueue.offer(new OutputMessageEvent(message.getMessage()));
 		trySubmitExecutionTask();
 	}
-	
-	/**
-	 * Defines method for close channel and connection by server initiative
-	 */
+
 	public void close() {
 		taskQueue.offer(CloseChannelEvent.getInstance());
 		trySubmitExecutionTask();
 	}
-	
-	/**
-	 * Put message in internal queue for future processing
-	 * @param message {@link AbstractMessage}
-	 */
+
 	public void sendMessage(AbstractMessage message) {
 		taskQueue.offer(new OutputMessageEvent(message));
 		trySubmitExecutionTask();
@@ -189,26 +173,15 @@ public abstract class AbstractChannel {
 	protected void finishProcessing() {
 		processing.set(false);
 	}
-	
-	/**
-	 * Receive handler which implements business logic
-	 * @return {@link IChannelHandler}
-	 */
+
 	public IChannelHandler getHandler() {
 		return handler;
 	}
-	
-	/**
-	 * Unique identifier of channel (defines on client side)
-	 * @return ID
-	 */
+
 	public String getID() {
 		return channelId;
 	}
-	
-	/**
-	 * Clear internal message queue
-	 */
+
 	public void clearQueue() {
 		taskQueue.clear();
 	}

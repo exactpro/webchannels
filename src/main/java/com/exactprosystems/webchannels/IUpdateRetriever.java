@@ -19,13 +19,12 @@
 package com.exactprosystems.webchannels;
 
 /**
- * 
- * Basic interface to define updates retriever which
- * contain collection of {@link IUpdateRequestListener}
+ *
  * 
  * @author dmitry.zavodchikov
  *
  */
+@Deprecated
 public interface IUpdateRetriever {
 	
 	void registerUpdateRequest(IUpdateRequestListener listener);
