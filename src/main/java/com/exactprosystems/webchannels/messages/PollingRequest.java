@@ -18,8 +18,7 @@
 
 package com.exactprosystems.webchannels.messages;
 
-@ChannelsMessage
-public class PollingRequest extends AdminMessage{
+public class PollingRequest implements AdminMessage{
 	
 	public PollingRequest() {
 	

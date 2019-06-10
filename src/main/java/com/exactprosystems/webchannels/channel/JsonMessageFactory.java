@@ -52,7 +52,7 @@ public class JsonMessageFactory extends AbstactMessageFactory {
 		this.mapper = new ObjectMapper(factory);
 		this.mapper.disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
 		this.mapper.disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
-		this.mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "messageType");
+		//this.mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "messageType");
 		this.mapper.findAndRegisterModules();
 	}
 	

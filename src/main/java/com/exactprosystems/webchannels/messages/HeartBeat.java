@@ -18,8 +18,7 @@
 
 package com.exactprosystems.webchannels.messages;
 
-@ChannelsMessage
-public class HeartBeat extends AdminMessage {
+public class HeartBeat implements AdminMessage {
 
 	public HeartBeat() {
 		

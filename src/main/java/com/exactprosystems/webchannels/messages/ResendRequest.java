@@ -20,8 +20,7 @@ package com.exactprosystems.webchannels.messages;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@ChannelsMessage
-public class ResendRequest extends AdminMessage {
+public class ResendRequest implements AdminMessage {
 
 	private final String requestId;
 	

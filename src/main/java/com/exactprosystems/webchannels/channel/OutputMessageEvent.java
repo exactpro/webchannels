@@ -18,24 +18,19 @@
 
 package com.exactprosystems.webchannels.channel;
 
-public class MessageEvent {
+import com.exactprosystems.webchannels.messages.AbstractMessage;
 
-	private final Object message;
-	
-	private final Direction direction;
+public class OutputMessageEvent {
 
-	public MessageEvent(Object message, Direction direction, Object context) {
+	private final AbstractMessage message;
+
+	public OutputMessageEvent(AbstractMessage message) {
 		super();
 		this.message = message;
-		this.direction = direction;
 	}
 
-	public Object getMessage() {
+	public AbstractMessage getMessage() {
 		return message;
-	}
-
-	public Direction getDirection() {
-		return direction;
 	}
 
 	@Override
@@ -43,8 +38,6 @@ public class MessageEvent {
 		StringBuilder builder = new StringBuilder();
 		builder.append("MessageWrapper[message=");
 		builder.append(message);
-		builder.append(",direction=");
-		builder.append(direction);
 		builder.append("]");
 		return builder.toString();
 	}

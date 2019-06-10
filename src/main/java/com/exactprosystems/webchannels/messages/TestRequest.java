@@ -18,8 +18,7 @@
 
 package com.exactprosystems.webchannels.messages;
 
-@ChannelsMessage
-public class TestRequest extends AdminMessage {
+public class TestRequest implements AdminMessage {
 
 	public TestRequest() {
 		

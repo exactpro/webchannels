@@ -104,10 +104,9 @@ public abstract class AbstractChannel {
 	/**
 	 * Defines method for handle incoming messages
 	 * @param message {@link AbstractMessage}
-	 * @param contextMap additional parameters in map view
 	 */
-	public void handleRequest(WithSeqnumWrapper message, Object context) {
-		taskQueue.offer(new MessageEvent(message, Direction.IN, context));
+	public void handleRequest(WithSeqnumWrapper message) {
+		taskQueue.offer(new OutputMessageEvent(message.getMessage()));
 		trySubmitExecutionTask();
 	}
 	
@@ -123,8 +122,8 @@ public abstract class AbstractChannel {
 	 * Put message in internal queue for future processing
 	 * @param message {@link AbstractMessage}
 	 */
-	public void sendMessage(Object message) {
-		taskQueue.offer(new MessageEvent(message, Direction.OUT, null));
+	public void sendMessage(AbstractMessage message) {
+		taskQueue.offer(new OutputMessageEvent(message));
 		trySubmitExecutionTask();
 	}
 	
@@ -137,18 +136,12 @@ public abstract class AbstractChannel {
 	protected void processTaskQueue() {
 		Object message = taskQueue.poll();
 		if (message != null) {
-			if (message instanceof MessageEvent) {
-				MessageEvent wrapper = (MessageEvent) message;
-				switch (wrapper.getDirection()) {
-				case IN:
-					processInputMessage((WithSeqnumWrapper) wrapper.getMessage());
-					break;
-				case OUT:
-					processOutputMessage(wrapper.getMessage());
-					break;
-				default:
-					throw new RuntimeException("Unsupported direction");
-				}
+			if (message instanceof OutputMessageEvent) {
+                OutputMessageEvent event = (OutputMessageEvent) message;
+                processOutputMessage(event.getMessage());
+            } else if (message instanceof InputMessageEvent) {
+                InputMessageEvent event = (InputMessageEvent) message;
+                processInputMessage(event.getMessage());
 			} else if (message instanceof CloseChannelEvent) {
 				onClose();
 				ChannelStats stats = getChannelStats();
@@ -179,7 +172,7 @@ public abstract class AbstractChannel {
 
 	protected abstract void onPoll();
 
-	protected abstract void processOutputMessage(Object message);
+	protected abstract void processOutputMessage(AbstractMessage message);
 
 	protected abstract void processInputMessage(WithSeqnumWrapper message);
 

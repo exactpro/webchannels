@@ -18,6 +18,8 @@
 
 package com.exactprosystems.webchannels.messages;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * 
  * Base message class
@@ -25,8 +27,7 @@ package com.exactprosystems.webchannels.messages;
  * @author dmitry.zavodchikov
  *
  */
-public abstract class AbstractMessage {
-	
-	public abstract boolean isAdmin();
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="messageType")
+public interface AbstractMessage {
 	
 }

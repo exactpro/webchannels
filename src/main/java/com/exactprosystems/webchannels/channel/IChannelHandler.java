@@ -40,13 +40,13 @@ public interface IChannelHandler {
 	 * @param message {@link AbstractMessage}
 	 * @return response
 	 */
-	Object onReceive(Object message, long seqnum);
+	AbstractMessage onReceive(AbstractMessage message, long seqnum);
 	
 	/**
 	 *  {@link AbstractChannel} message send event handler
 	 * @param message {@link AbstractMessage}
 	 */
-	void onSend(Object message, long seqnum);
+	void onSend(AbstractMessage message, long seqnum);
 	
 	/**
 	 * {@link AbstractChannel} close event handler

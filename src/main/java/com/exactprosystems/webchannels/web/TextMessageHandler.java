@@ -65,7 +65,7 @@ public class TextMessageHandler implements MessageHandler.Whole<Reader> {
 		if (list != null) {
 			for (WithSeqnumWrapper request : list) {
 				logger.trace("MessageHandler {} onMessage() {} for {}", this, request, channel);
-				channel.handleRequest(request, null);
+				channel.handleRequest(request);
 			}
 		}
 		

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSession;
 
 import com.exactprosystems.webchannels.enums.ChannelStatus;
 import com.exactprosystems.webchannels.exceptions.RecoverException;
+import com.exactprosystems.webchannels.messages.AbstractMessage;
 import com.exactprosystems.webchannels.messages.AdminMessage;
 import com.exactprosystems.webchannels.messages.CloseChannel;
 import com.exactprosystems.webchannels.messages.HeartBeat;
@@ -156,8 +157,8 @@ public class HttpChannel extends AbstractChannel {
 	
 	@Override
 	protected void processInputMessage(WithSeqnumWrapper wrapper) {
-		
-		Object message = wrapper.getMessage();
+
+		AbstractMessage message = wrapper.getMessage();
 		long seqnum = wrapper.getSeqnum();
 		long expectedSeqnum = inputSeqnum + 1;
 		
@@ -232,8 +233,8 @@ public class HttpChannel extends AbstractChannel {
 		
 	}
 	
-	private void handleBusinessMessage(Object message, long seqnum) {
-		Object response = this.getHandler().onReceive(message, seqnum);
+	private void handleBusinessMessage(AbstractMessage message, long seqnum) {
+		AbstractMessage response = this.getHandler().onReceive(message, seqnum);
 		if (response != null) {
 			this.sendMessage(response);
 		}
@@ -271,7 +272,7 @@ public class HttpChannel extends AbstractChannel {
 	}
 	
 	@Override
-	protected void processOutputMessage(Object message) {
+	protected void processOutputMessage(AbstractMessage message) {
 		
 		WithSeqnumWrapper wrapper = new WithSeqnumWrapper(outputSeqnum++, message);
 		outputMessageQueue.offer(wrapper);

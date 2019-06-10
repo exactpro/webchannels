@@ -18,9 +18,7 @@
 
 package com.exactprosystems.webchannels.messages;
 
-
-@ChannelsMessage
-public class CloseChannel extends AdminMessage {
+public class CloseChannel implements AdminMessage {
 
 	public CloseChannel() {
 		

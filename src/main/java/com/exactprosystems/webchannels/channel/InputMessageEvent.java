@@ -16,22 +16,17 @@
  * ****************************************************************************
  */
 
-package com.exactprosystems.webchannels.messages;
+package com.exactprosystems.webchannels.channel;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class InputMessageEvent {
 
-/**
- * 
- * Use with registering channels messages in MessageFactory
- * 
- * @author dmitry.zavodchikov
- *
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ChannelsMessage {
+    private final WithSeqnumWrapper message;
 
+    public InputMessageEvent(WithSeqnumWrapper message) {
+        this.message = message;
+    }
+
+    public WithSeqnumWrapper getMessage() {
+        return message;
+    }
 }

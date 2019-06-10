@@ -96,7 +96,7 @@ public class HttpChannelProcessor extends AbstractChannelProcessor{
 			} else {
 				for (WithSeqnumWrapper wrapper : list) {
 					logger.trace("Processor {} onMessage() {} for {}", this, wrapper, channel);
-					channel.handleRequest(wrapper, null);
+					channel.handleRequest(wrapper);
 				}
 				context.complete();
 			}
