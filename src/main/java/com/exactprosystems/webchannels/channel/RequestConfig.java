@@ -20,6 +20,6 @@ package com.exactprosystems.webchannels.channel;
 
 public class RequestConfig {
 
-	public static final String COMPRESSION_SUPPORTED = "COMPRESSION_SUPPORTED";
+	public static final String COMPRESSION_SUPPORTED = "compressionSupported";
 
 }
