@@ -130,28 +130,6 @@ public class HttpChannelProcessor extends AbstractChannelProcessor{
 		
 	}
 	
-	private ChannelSettings getSettings(HttpSession session, ServletRequest request) {
-		Boolean compressionEnabled = getSaveValue((Boolean) session.getAttribute("compressionEnabled"), settings.isCompressionEnabled());
-		Boolean compressionSupported = getSaveValue(Boolean.valueOf(request.getParameter("compressionSupported")), Boolean.TRUE);
-		return new ChannelSettings(
-					getSaveValue((Long) session.getAttribute("pollingInterval"), settings.getPollingInterval()), 
-					getSaveValue((Long) session.getAttribute("heartbeatInterval"), settings.getHeartBeatInterval()), 
-					settings.getMaxCountToSend(), 
-					settings.getExecutorBatchSize(), 
-					getSaveValue((Long) session.getAttribute("sessionDestroyInterval"), settings.getDisconnectTimeout()),
-					settings.getThreadCount(), 
-					settings.getResendBufferSize(),
-					compressionEnabled && compressionSupported);
-	}
-
-	private <T> T getSaveValue(T value, T defaultValue) {
-		if (value != null) {
-			return value;
-		} else {
-			return defaultValue;
-		}
-	}
-	
 	@Override
 	public String toString() {
 		return "HttpChannelProcessor[]";

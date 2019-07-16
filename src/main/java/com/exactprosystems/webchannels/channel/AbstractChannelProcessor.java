@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -98,6 +99,29 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 
 	public ChannelSettings getSettings() {
 		return settings;
+	}
+
+	public ChannelSettings getSettings(HttpSession session, ServletRequest request) {
+		Boolean compressionEnabled = getSaveValue((Boolean) session.getAttribute(SessionConfig.COMPRESSION_ENABLED), settings.isCompressionEnabled());
+		Boolean compressionSupported = getSaveValue(Boolean.valueOf(request.getParameter(RequestConfig.COMPRESSION_SUPPORTED)), Boolean.FALSE);
+		return new ChannelSettings(
+				getSaveValue((Long) session.getAttribute(SessionConfig.POLLING_INTERVAL), settings.getPollingInterval()),
+				getSaveValue((Long) session.getAttribute(SessionConfig.HEARTBEAT_INTERVAL), settings.getHeartBeatInterval()),
+				settings.getMaxCountToSend(),
+				settings.getExecutorBatchSize(),
+				getSaveValue((Long) session.getAttribute(SessionConfig.CONNECTION_TIMEOUT), settings.getDisconnectTimeout()),
+				settings.getThreadCount(),
+				settings.getResendBufferSize(),
+				compressionEnabled && compressionSupported);
+	}
+
+	private <T> T getSaveValue(T ...values) {
+		for (T value : values) {
+			if (value != null) {
+				return value;
+			}
+		}
+		return null;
 	}
 
 	@Override

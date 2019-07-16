@@ -91,26 +91,6 @@ public class WebSocketChannelProcessor extends AbstractChannelProcessor{
 		
 	}
 	
-	private ChannelSettings getSettings(HttpSession session, HandshakeRequest request) {
-		return new ChannelSettings(
-					getSaveValue((Long) session.getAttribute("pollingInterval"), settings.getPollingInterval()), 
-					getSaveValue((Long) session.getAttribute("heartbeatInterval"), settings.getHeartBeatInterval()), 
-					settings.getMaxCountToSend(), 
-					settings.getExecutorBatchSize(), 
-					getSaveValue((Long) session.getAttribute("sessionDestroyInterval"), settings.getDisconnectTimeout()),
-					settings.getThreadCount(),
-					settings.getResendBufferSize(),
-					getSaveValue((Boolean) session.getAttribute("compressionEnabled"), settings.isCompressionEnabled()));
-	}
-
-	private <T> T getSaveValue(T value, T defaultValue) {
-		if (value != null) {
-			return value;
-		} else {
-			return defaultValue;
-		}
-	}
-	
 	@Override
 	public String toString() {
 		return "WebSocketChannelProcessor[]";
