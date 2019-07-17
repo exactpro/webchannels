@@ -18,25 +18,20 @@
 
 package com.exactprosystems.webchannels.channel;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import com.exactprosystems.webchannels.enums.ChannelStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.exactprosystems.webchannels.enums.ChannelStatus;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executor;
 
 public abstract class AbstractChannelProcessor implements HttpSessionListener {
 
@@ -52,30 +47,21 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 	
 	protected final ChannelSettings settings;
 	
-	protected final ExecutorService executor;
+	protected final Executor executor;
 	
 	protected final IdleChannelsMonitor idleChannelsMonitor;
 
 	private final Thread idleChannelsMonitorThread;
 	
-	public AbstractChannelProcessor (AbstractHandlerFactory handlerFactory, AbstractMessageFactory messageFactory,
-			ChannelSettings settings, AbstractChannelFactory channelFactory) {
+	public AbstractChannelProcessor(AbstractHandlerFactory handlerFactory, AbstractMessageFactory messageFactory,
+			ChannelSettings settings, AbstractChannelFactory channelFactory, Executor executor) {
 		
 		this.channels = new ConcurrentHashMap<String, AbstractChannel>();
 		this.settings = settings;
 		this.handlerFactory = handlerFactory;
 		this.messageFactory = messageFactory;
 		this.channelFactory = channelFactory;
-		
-		UncaughtExceptionHandler handler = new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				logger.error("Uncaught exception in channels executor service", e);
-			}
-		};
-		
-		this.executor = new ForkJoinPool(settings.getThreadCount(), 
-				ForkJoinPool.defaultForkJoinWorkerThreadFactory, handler, false);
+		this.executor = executor;
 		
 		this.idleChannelsMonitor = new IdleChannelsMonitor();
 		this.idleChannelsMonitorThread = new Thread(idleChannelsMonitor, this.getClass().getSimpleName() + "-IdleChannelsMonitor");
@@ -110,7 +96,6 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 				settings.getMaxCountToSend(),
 				settings.getExecutorBatchSize(),
 				getSaveValue((Long) session.getAttribute(SessionConfig.CONNECTION_TIMEOUT), settings.getDisconnectTimeout()),
-				settings.getThreadCount(),
 				settings.getResendBufferSize(),
 				compressionEnabled && compressionSupported);
 	}
@@ -150,13 +135,6 @@ public abstract class AbstractChannelProcessor implements HttpSessionListener {
 		idleChannelsMonitor.stop();
 		try {
 			idleChannelsMonitorThread.join();
-		} catch (InterruptedException e) {
-			logger.error(e.getMessage(), e);
-		}
-		
-		executor.shutdown();
-		try {
-			executor.awaitTermination(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			logger.error(e.getMessage(), e);
 		}

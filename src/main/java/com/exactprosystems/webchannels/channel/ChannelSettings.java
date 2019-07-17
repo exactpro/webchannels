@@ -25,7 +25,6 @@ public class ChannelSettings {
 	private final long disconnectTimeout;
 	private final int maxCountToSend;
 	private final int executorBatchSize;
-	private final int threadCount;
 	private final int resendBufferSize;
 	private final boolean compressionEnabled;
 	
@@ -37,18 +36,16 @@ public class ChannelSettings {
 		this.disconnectTimeout = 10000;
 		this.resendBufferSize = 1024;
 		this.compressionEnabled = false;
-		this.threadCount = Runtime.getRuntime().availableProcessors();
 	}
 	
 	public ChannelSettings(long pollingInterval, long heartBeatInterval, 
 			int maxCountToSend, int executorBatchSize, long disconnectTimeout,
-			int threadCount, int resendBufferSize, boolean compressionEnabled) {
+			int resendBufferSize, boolean compressionEnabled) {
 		this.pollingInterval = pollingInterval;
 		this.heartBeatInterval = heartBeatInterval;
 		this.maxCountToSend = maxCountToSend;
 		this.executorBatchSize = executorBatchSize;
 		this.disconnectTimeout = disconnectTimeout;
-		this.threadCount = threadCount;
 		this.resendBufferSize = resendBufferSize;
 		this.compressionEnabled = compressionEnabled;
 	}
@@ -73,10 +70,6 @@ public class ChannelSettings {
 		return executorBatchSize;
 	}
 
-	public int getThreadCount() {
-		return threadCount;
-	}
-
 	public int getResendBufferSize() {
 		return resendBufferSize;
 	}
@@ -98,8 +91,6 @@ public class ChannelSettings {
 		builder.append(executorBatchSize);
 		builder.append(", sessionDestroyInterval=");
 		builder.append(disconnectTimeout);
-		builder.append(", threadCount=");
-		builder.append(threadCount);
 		builder.append(", resendBufferSize=");
 		builder.append(resendBufferSize);
 		builder.append("]");

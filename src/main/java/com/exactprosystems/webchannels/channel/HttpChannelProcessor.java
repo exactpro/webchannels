@@ -18,27 +18,26 @@
 
 package com.exactprosystems.webchannels.channel;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.List;
-import java.util.zip.InflaterInputStream;
+import com.exactprosystems.webchannels.messages.PollingRequest;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import com.exactprosystems.webchannels.messages.PollingRequest;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.zip.InflaterInputStream;
 
 public class HttpChannelProcessor extends AbstractChannelProcessor{
 	
 	public HttpChannelProcessor(AbstractHandlerFactory handlerFactory,
-			AbstractMessageFactory messageFactory,
-			ChannelSettings settings) {
+								AbstractMessageFactory messageFactory,
+								ChannelSettings settings, Executor executorService) {
 		
 		super(handlerFactory, messageFactory, settings,
-				new HttpChannelFactory(messageFactory, handlerFactory));
+				new HttpChannelFactory(messageFactory, handlerFactory), executorService);
 		
 	}
 	

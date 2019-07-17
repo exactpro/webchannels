@@ -18,18 +18,16 @@
 
 package com.exactprosystems.webchannels.channel;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.servlet.http.HttpSession;
-
+import com.exactprosystems.webchannels.enums.ChannelStatus;
+import com.exactprosystems.webchannels.messages.AbstractMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.exactprosystems.webchannels.enums.ChannelStatus;
-import com.exactprosystems.webchannels.messages.AbstractMessage;
+import javax.servlet.http.HttpSession;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 
@@ -50,7 +48,7 @@ public abstract class AbstractChannel {
 	
 	private final ChannelSettings settings;
 	
-	private final ExecutorService executor;
+	private final Executor executor;
 	
 	private final AtomicBoolean processing;
 	
@@ -63,7 +61,7 @@ public abstract class AbstractChannel {
 	private volatile ChannelStatus status;
 
 	public AbstractChannel(IChannelHandler handler, String channelId, ChannelSettings settings,
-						   AbstractMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
+						   AbstractMessageFactory messageFactory, Executor executor, HttpSession httpSession) {
 		this.handler = handler;
 		this.settings = settings;
 		this.taskQueue = new ConcurrentLinkedQueue<Object>();
@@ -113,7 +111,7 @@ public abstract class AbstractChannel {
 	
 	private void trySubmitExecutionTask() {
 		if (this.tryProcessing()) {
-			executor.submit(new ExecutionTask(this, executor));
+			executor.execute(new ExecutionTask(this, executor));
 		}
 	}
 	

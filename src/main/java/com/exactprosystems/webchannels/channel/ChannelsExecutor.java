@@ -22,47 +22,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 
-public class ExecutionTask implements Runnable {
+public class ChannelsExecutor {
 
-	private static final Logger logger = LoggerFactory.getLogger(ExecutionTask.class);
-	
-	private final AbstractChannel channel;
-	
-	private final Executor executor;
-	
-	public ExecutionTask(AbstractChannel channel, Executor executor) {
-		this.channel = channel;
-		this.executor = executor;
-	}
-	
-	@Override
-	public void run() {
-	
-		int count = 0;
-		
-		while (!channel.isTaskQueueEmpty() && count < channel.getChannelSettings().getExecutorBatchSize()) {
-			count++;
-			try {
-				channel.processTaskQueue();
-			} catch (Throwable e) {
-				logger.error("Error during process channel task queue", e);
-			}
+	private static final Logger logger = LoggerFactory.getLogger(ChannelsExecutor.class);
+
+	private static final Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+		@Override
+		public void uncaughtException(Thread t, Throwable e) {
+			logger.error("Uncaught exception in channels executor service", e);
 		}
-		
-		if (!channel.isTaskQueueEmpty()) {
-			executor.execute(new ExecutionTask(channel, executor));
-		} else {
-			channel.finishProcessing();
-		}
-		
-	}
+	};
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("ExecutionTask[]");
-		return builder.toString();
+	public static Executor create(int threadCount) {
+		return new ForkJoinPool(threadCount, ForkJoinPool.defaultForkJoinWorkerThreadFactory, handler, false);
 	}
 
 }

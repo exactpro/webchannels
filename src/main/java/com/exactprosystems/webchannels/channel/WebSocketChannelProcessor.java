@@ -18,21 +18,21 @@
 
 package com.exactprosystems.webchannels.channel;
 
+import com.exactprosystems.webchannels.web.BinaryMessageHandler;
+import com.exactprosystems.webchannels.web.TextMessageHandler;
+
 import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
-import javax.websocket.server.HandshakeRequest;
-
-import com.exactprosystems.webchannels.web.BinaryMessageHandler;
-import com.exactprosystems.webchannels.web.TextMessageHandler;
+import java.util.concurrent.Executor;
 
 public class WebSocketChannelProcessor extends AbstractChannelProcessor{
 	
-	public WebSocketChannelProcessor(AbstractHandlerFactory handlerFactory, AbstractMessageFactory messageFactory, ChannelSettings settings) {
+	public WebSocketChannelProcessor(AbstractHandlerFactory handlerFactory, AbstractMessageFactory messageFactory, ChannelSettings settings, Executor executorService) {
 		
 		super(handlerFactory, messageFactory, settings, 
-				new WebSocketChannelFactory(messageFactory, handlerFactory));
+				new WebSocketChannelFactory(messageFactory, handlerFactory), executorService);
 		
 	}
 	

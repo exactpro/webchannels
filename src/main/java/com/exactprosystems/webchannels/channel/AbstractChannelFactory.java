@@ -18,9 +18,8 @@
 
 package com.exactprosystems.webchannels.channel;
 
-import java.util.concurrent.ExecutorService;
-
 import javax.servlet.http.HttpSession;
+import java.util.concurrent.Executor;
 
 /**
  * 
@@ -47,6 +46,6 @@ public abstract class AbstractChannelFactory {
 		return handlerFactory;
 	}
 
-	public abstract AbstractChannel createChannel(String channelId, ChannelSettings settings, ExecutorService executor, HttpSession httpSession);
+	public abstract AbstractChannel createChannel(String channelId, ChannelSettings settings, Executor executor, HttpSession httpSession);
 	
 }

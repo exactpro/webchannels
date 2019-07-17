@@ -18,18 +18,6 @@
 
 package com.exactprosystems.webchannels.channel;
 
-import java.io.OutputStream;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.zip.DeflaterOutputStream;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.exactprosystems.webchannels.enums.ChannelStatus;
 import com.exactprosystems.webchannels.exceptions.RecoverException;
 import com.exactprosystems.webchannels.messages.AbstractMessage;
@@ -38,6 +26,17 @@ import com.exactprosystems.webchannels.messages.CloseChannel;
 import com.exactprosystems.webchannels.messages.HeartBeat;
 import com.exactprosystems.webchannels.messages.ResendRequest;
 import com.exactprosystems.webchannels.messages.TestRequest;
+
+import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.OutputStream;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.zip.DeflaterOutputStream;
 
 public class HttpChannel extends AbstractChannel {
 	
@@ -68,7 +67,7 @@ public class HttpChannel extends AbstractChannel {
 	private long lastResendRequestTime;
 	
 	public HttpChannel(IChannelHandler handler, String id, ChannelSettings settings,
-					   AbstractMessageFactory messageFactory, ExecutorService executor, HttpSession httpSession) {
+					   AbstractMessageFactory messageFactory, Executor executor, HttpSession httpSession) {
 				
 		super(handler, id, settings, messageFactory, executor, httpSession);
 		
