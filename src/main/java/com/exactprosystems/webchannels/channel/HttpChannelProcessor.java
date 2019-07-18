@@ -22,6 +22,7 @@ import com.exactprosystems.webchannels.messages.PollingRequest;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.InputStream;
@@ -127,6 +128,19 @@ public class HttpChannelProcessor extends AbstractChannelProcessor{
 			
 		}
 		
+	}
+
+	public ChannelSettings getSettings(HttpSession session, ServletRequest request) {
+		Boolean compressionEnabled = getSaveValue((Boolean) session.getAttribute(SessionConfig.COMPRESSION_ENABLED), settings.isCompressionEnabled());
+		Boolean compressionSupported = getSaveValue(Boolean.valueOf(request.getParameter(RequestConfig.COMPRESSION_SUPPORTED)), Boolean.FALSE);
+		return new ChannelSettings(
+				getSaveValue((Long) session.getAttribute(SessionConfig.POLLING_INTERVAL), settings.getPollingInterval()),
+				getSaveValue((Long) session.getAttribute(SessionConfig.HEARTBEAT_INTERVAL), settings.getHeartBeatInterval()),
+				settings.getMaxCountToSend(),
+				settings.getExecutorBatchSize(),
+				getSaveValue((Long) session.getAttribute(SessionConfig.CONNECTION_TIMEOUT), settings.getDisconnectTimeout()),
+				settings.getResendBufferSize(),
+				compressionEnabled && compressionSupported);
 	}
 	
 	@Override

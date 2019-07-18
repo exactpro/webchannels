@@ -48,7 +48,7 @@ public class WebSocketChannelProcessor extends AbstractChannelProcessor{
 		
 		if (channel == null) {
 			HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-			ChannelSettings settings = getSettings(httpSession, null);
+			ChannelSettings settings = getSettings(httpSession);
 			channel = channelFactory.createChannel(channelId, settings, executor, httpSession);
 			AbstractChannel prev = channels.putIfAbsent(channel.getID(), channel);
 			if (prev != null) {
@@ -89,6 +89,18 @@ public class WebSocketChannelProcessor extends AbstractChannelProcessor{
 			channel.unbind(session);
 		}
 		
+	}
+
+
+	public ChannelSettings getSettings(HttpSession session) {
+		return new ChannelSettings(
+				getSaveValue((Long) session.getAttribute(SessionConfig.POLLING_INTERVAL), settings.getPollingInterval()),
+				getSaveValue((Long) session.getAttribute(SessionConfig.HEARTBEAT_INTERVAL), settings.getHeartBeatInterval()),
+				settings.getMaxCountToSend(),
+				settings.getExecutorBatchSize(),
+				getSaveValue((Long) session.getAttribute(SessionConfig.CONNECTION_TIMEOUT), settings.getDisconnectTimeout()),
+				settings.getResendBufferSize(),
+				getSaveValue((Boolean) session.getAttribute(SessionConfig.COMPRESSION_ENABLED), settings.isCompressionEnabled()));
 	}
 	
 	@Override

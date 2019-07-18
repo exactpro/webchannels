@@ -5,7 +5,7 @@
 	<groupId>com.exactpro.webchannels</groupId>
 	<artifactId>webchannels</artifactId>
 	<packaging>jar</packaging>
-	<version>2.2.2-SNAPSHOT</version>
+	<version>2.2.3-SNAPSHOT</version>
 	<name>Exactpro WebChannels</name>
 	<description>WebChannels is java library for browser agnostic message transport with reliable delivery over standard API (websocket, XMLHttpRequest)</description>
 	<url>https://github.com/Exactpro/webchannels</url>
